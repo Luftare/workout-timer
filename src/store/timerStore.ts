@@ -1,58 +1,61 @@
 import { create } from "zustand";
 import { COUNTDOWN_DURATION_MS } from "../constants/constants";
-import { Exercise } from "../data/exercises";
+import { Set } from "../data/sets";
 
 type TimerState = "idle" | "countdown" | "running" | "paused" | "completed";
 
 interface TimerStore {
   state: TimerState;
-  exercises: Exercise[];
-  currentExerciseIndex: number;
+  sets: Set[];
+  currentSetIndex: number;
   countdownRemaining: number;
   timerRemaining: number;
-  setExercises: (exercises: Exercise[]) => void;
+  setSets: (sets: Set[]) => void;
   startCountdown: () => void;
   startTimer: () => void;
   pauseTimer: () => void;
   continueTimer: () => void;
   updateCountdown: (remaining: number) => void;
   updateTimer: (remaining: number) => void;
-  nextExercise: () => void;
+  nextSet: () => void;
   reset: () => void;
-  getCurrentExercise: () => Exercise | null;
-  getNextExercise: () => Exercise | null;
-  isLastExercise: () => boolean;
+  getCurrentSet: () => Set | null;
+  getNextSet: () => Set | null;
+  isLastSet: () => boolean;
   startRestAutomatically: () => void;
 }
 
 export const useTimerStore = create<TimerStore>((set, get) => ({
   state: "idle",
-  exercises: [],
-  currentExerciseIndex: 0,
+  sets: [],
+  currentSetIndex: 0,
   countdownRemaining: COUNTDOWN_DURATION_MS,
   timerRemaining: 0,
-  setExercises: (exercises: Exercise[]) =>
+  setSets: (sets: Set[]) =>
     set({
-      exercises,
-      currentExerciseIndex: 0,
+      sets,
+      currentSetIndex: 0,
       state: "idle",
       countdownRemaining: COUNTDOWN_DURATION_MS,
-      timerRemaining: exercises[0] ? exercises[0].durationSeconds * 1000 : 0,
+      timerRemaining: sets[0] ? sets[0].durationSeconds * 1000 : 0,
     }),
   startCountdown: () => {
-    const currentExercise = get().getCurrentExercise();
-    if (currentExercise) {
+    const currentSet = get().getCurrentSet();
+    if (currentSet) {
       set({
         state: "countdown",
         countdownRemaining: COUNTDOWN_DURATION_MS,
-        timerRemaining: currentExercise.durationSeconds * 1000,
+        timerRemaining: currentSet.durationSeconds * 1000,
       });
     }
   },
   startTimer: () => {
-    const currentExercise = get().getCurrentExercise();
-    if (currentExercise) {
-      set({ state: "running", timerRemaining: currentExercise.durationSeconds * 1000 });
+    const currentSet = get().getCurrentSet();
+    if (currentSet) {
+      set({
+        state: "running",
+        timerRemaining: currentSet.durationSeconds * 1000,
+      });
     }
   },
   pauseTimer: () => set({ state: "paused" }),
@@ -60,53 +63,53 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   updateCountdown: (remaining: number) =>
     set({ countdownRemaining: remaining }),
   updateTimer: (remaining: number) => set({ timerRemaining: remaining }),
-  nextExercise: () => {
-    const { currentExerciseIndex, exercises } = get();
-    const nextIndex = currentExerciseIndex + 1;
-    if (nextIndex < exercises.length) {
-      const nextExercise = exercises[nextIndex];
+  nextSet: () => {
+    const { currentSetIndex, sets } = get();
+    const nextIndex = currentSetIndex + 1;
+    if (nextIndex < sets.length) {
+      const nextSet = sets[nextIndex];
       set({
-        currentExerciseIndex: nextIndex,
+        currentSetIndex: nextIndex,
         state: "idle",
         countdownRemaining: COUNTDOWN_DURATION_MS,
-        timerRemaining: nextExercise.durationSeconds * 1000,
+        timerRemaining: nextSet.durationSeconds * 1000,
       });
     }
   },
   reset: () => {
-    const exercises = get().exercises;
-    const firstExercise = exercises[0];
+    const sets = get().sets;
+    const firstSet = sets[0];
     set({
       state: "idle",
-      currentExerciseIndex: 0,
+      currentSetIndex: 0,
       countdownRemaining: COUNTDOWN_DURATION_MS,
-      timerRemaining: firstExercise ? firstExercise.durationSeconds * 1000 : 0,
+      timerRemaining: firstSet ? firstSet.durationSeconds * 1000 : 0,
     });
   },
-  getCurrentExercise: () => {
-    const { exercises, currentExerciseIndex } = get();
-    return exercises[currentExerciseIndex] || null;
+  getCurrentSet: () => {
+    const { sets, currentSetIndex } = get();
+    return sets[currentSetIndex] || null;
   },
-  getNextExercise: () => {
-    const { exercises, currentExerciseIndex } = get();
-    const nextIndex = currentExerciseIndex + 1;
-    return exercises[nextIndex] || null;
+  getNextSet: () => {
+    const { sets, currentSetIndex } = get();
+    const nextIndex = currentSetIndex + 1;
+    return sets[nextIndex] || null;
   },
-  isLastExercise: () => {
-    const { exercises, currentExerciseIndex } = get();
-    return currentExerciseIndex === exercises.length - 1;
+  isLastSet: () => {
+    const { sets, currentSetIndex } = get();
+    return currentSetIndex === sets.length - 1;
   },
   startRestAutomatically: () => {
-    const { exercises, currentExerciseIndex } = get();
-    const nextIndex = currentExerciseIndex + 1;
-    if (nextIndex < exercises.length) {
-      const nextExercise = exercises[nextIndex];
-      if (nextExercise.isRest) {
+    const { sets, currentSetIndex } = get();
+    const nextIndex = currentSetIndex + 1;
+    if (nextIndex < sets.length) {
+      const nextSet = sets[nextIndex];
+      if (nextSet.isRest) {
         set({
-          currentExerciseIndex: nextIndex,
+          currentSetIndex: nextIndex,
           state: "running",
           countdownRemaining: COUNTDOWN_DURATION_MS,
-          timerRemaining: nextExercise.durationSeconds * 1000,
+          timerRemaining: nextSet.durationSeconds * 1000,
         });
       }
     }

@@ -15,21 +15,21 @@ export const TimerView = () => {
   const navigate = useNavigate();
   const {
     state,
-    exercises,
-    currentExerciseIndex,
+    sets,
+    currentSetIndex,
     countdownRemaining,
     timerRemaining,
     startCountdown,
-    nextExercise,
+    nextSet,
     reset,
-    getCurrentExercise,
-    getNextExercise,
-    isLastExercise,
+    getCurrentSet,
+    getNextSet,
+    isLastSet,
     startRestAutomatically,
   } = useTimerStore();
 
-  const currentExercise = getCurrentExercise();
-  const nextExerciseData = getNextExercise();
+  const currentSet = getCurrentSet();
+  const nextSetData = getNextSet();
 
   const countdownIntervalRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<number | null>(null);
@@ -44,7 +44,7 @@ export const TimerView = () => {
 
   // Calculate progress percentage (0-100)
   const getProgress = (): number => {
-    if (!currentExercise) return 0;
+    if (!currentSet) return 0;
 
     if (state === "countdown") {
       return (
@@ -53,14 +53,14 @@ export const TimerView = () => {
       );
     }
     if (state === "running" || state === "paused") {
-      const exerciseDurationMs = currentExercise.durationSeconds * 1000;
-      return ((exerciseDurationMs - timerRemaining) / exerciseDurationMs) * 100;
+      const setDurationMs = currentSet.durationSeconds * 1000;
+      return ((setDurationMs - timerRemaining) / setDurationMs) * 100;
     }
     return 0;
   };
 
-  const stepIndicator = currentExercise
-    ? `${currentExerciseIndex + 1} of ${exercises.length}`
+  const stepIndicator = currentSet
+    ? `${currentSetIndex + 1} of ${sets.length}`
     : "";
 
   // Handle countdown
@@ -122,15 +122,25 @@ export const TimerView = () => {
             timerIntervalRef.current = null;
           }
           const store = useTimerStore.getState();
-          const currentEx = store.getCurrentExercise();
-          const nextEx = store.getNextExercise();
+          const currentSetData = store.getCurrentSet();
+          const nextSetData = store.getNextSet();
 
           // If current is rest and completes, move to next set (idle state)
-          if (currentEx && currentEx.isRest && nextEx && !nextEx.isRest) {
-            store.nextExercise();
+          if (
+            currentSetData &&
+            currentSetData.isRest &&
+            nextSetData &&
+            !nextSetData.isRest
+          ) {
+            store.nextSet();
           }
-          // Auto-start rest if next exercise is rest
-          else if (currentEx && !currentEx.isRest && nextEx && nextEx.isRest) {
+          // Auto-start rest if next set is rest
+          else if (
+            currentSetData &&
+            !currentSetData.isRest &&
+            nextSetData &&
+            nextSetData.isRest
+          ) {
             store.startRestAutomatically();
           } else {
             useTimerStore.setState({ state: "completed" });
@@ -150,24 +160,24 @@ export const TimerView = () => {
         timerIntervalRef.current = null;
       }
     };
-  }, [state, currentExerciseIndex]);
+  }, [state, currentSetIndex]);
 
   const handleStartCountdown = () => {
     startCountdown();
   };
 
   const handleNext = () => {
-    if (isLastExercise()) {
+    if (isLastSet()) {
       // Navigate back to exercise list when finished
       navigate("/exercises");
       reset();
     } else {
-      const nextEx = getNextExercise();
+      const nextSetInfo = getNextSet();
       // If next is rest, auto-start it
-      if (nextEx && nextEx.isRest) {
+      if (nextSetInfo && nextSetInfo.isRest) {
         startRestAutomatically();
       } else {
-        nextExercise();
+        nextSet();
       }
     }
   };
@@ -177,13 +187,13 @@ export const TimerView = () => {
     reset();
   };
 
-  if (!currentExercise) {
+  if (!currentSet) {
     return (
       <div className="timer-view">
         <Nav onBack={handleBack} />
         <div className="timer-view__main">
           <div className="timer-view__content">
-            <Headline>No exercise selected</Headline>
+            <Headline>No set selected</Headline>
           </div>
         </div>
       </div>
@@ -202,8 +212,8 @@ export const TimerView = () => {
 
       <div className="timer-view__main">
         <div className="timer-view__content">
-          <Headline>{currentExercise.name}</Headline>
-          <Paragraph>{currentExercise.description}</Paragraph>
+          <Headline>{currentSet.name}</Headline>
+          <Paragraph>{currentSet.description}</Paragraph>
 
           {state === "countdown" && (
             <div className="timer-view__countdown">
@@ -222,23 +232,23 @@ export const TimerView = () => {
           {state === "completed" && (
             <div className="timer-view__completed">
               <Headline>
-                {isLastExercise() ? "Exercise Completed" : "Set Completed"}
+                {isLastSet() ? "Exercise Completed" : "Set Completed"}
               </Headline>
             </div>
           )}
 
           {/* Show next set preview during rest */}
           {state === "running" &&
-            currentExercise?.isRest &&
-            nextExerciseData &&
-            !nextExerciseData.isRest && (
+            currentSet?.isRest &&
+            nextSetData &&
+            !nextSetData.isRest && (
               <div className="timer-view__next-preview">
                 <div className="timer-view__next-preview-content">
                   <h3 className="timer-view__next-preview-title">
-                    Next: {nextExerciseData.name}
+                    Next: {nextSetData.name}
                   </h3>
                   <p className="timer-view__next-preview-description">
-                    {nextExerciseData.description}
+                    {nextSetData.description}
                   </p>
                 </div>
               </div>
@@ -247,14 +257,14 @@ export const TimerView = () => {
       </div>
 
       {(state === "idle" ||
-        (state === "completed" && !nextExerciseData?.isRest)) && (
+        (state === "completed" && !nextSetData?.isRest)) && (
         <div className="timer-view__actions">
           <Button
             onClick={state === "idle" ? handleStartCountdown : handleNext}
           >
             {state === "idle"
               ? "Start Countdown"
-              : isLastExercise()
+              : isLastSet()
               ? "Finish"
               : "Next"}
           </Button>

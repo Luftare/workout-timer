@@ -1,4 +1,4 @@
-export interface Exercise {
+export interface Set {
   id: string;
   name: string;
   durationSeconds: number;
@@ -6,7 +6,7 @@ export interface Exercise {
   isRest: boolean;
 }
 
-export const DEFAULT_EXERCISES: Exercise[] = [
+export const DEFAULT_SETS: Set[] = [
   {
     id: "1",
     name: "Pushups",

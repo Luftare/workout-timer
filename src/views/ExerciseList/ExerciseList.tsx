@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useTimerStore } from "../../store/timerStore";
-import { DEFAULT_EXERCISES } from "../../data/exercises";
+import { DEFAULT_SETS } from "../../data/sets";
 import { Nav } from "../../components/Nav/Nav";
-import { ExerciseCard } from "../../components/ExerciseCard/ExerciseCard";
+import { SetCard } from "../../components/SetCard/SetCard";
 import { Button } from "../../components/Button/Button";
 import "./ExerciseList.css";
 
 export const ExerciseList = () => {
   const navigate = useNavigate();
-  const setExercises = useTimerStore((state) => state.setExercises);
+  const setSets = useTimerStore((state) => state.setSets);
 
   const handleStart = () => {
-    setExercises(DEFAULT_EXERCISES);
+    setSets(DEFAULT_SETS);
     navigate("/timer");
   };
 
@@ -24,8 +24,8 @@ export const ExerciseList = () => {
       <Nav onBack={handleBack} />
       <div className="exercise-list__content">
         <div className="exercise-list__exercises">
-          {DEFAULT_EXERCISES.map((exercise) => (
-            <ExerciseCard key={exercise.id} exercise={exercise} />
+          {DEFAULT_SETS.map((set) => (
+            <SetCard key={set.id} set={set} />
           ))}
         </div>
         <div className="exercise-list__actions">

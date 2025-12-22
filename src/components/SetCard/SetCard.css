@@ -1,29 +1,29 @@
-.exercise-card {
+.set-card {
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-md);
   background-color: transparent;
 }
 
-.exercise-card__header {
+.set-card__header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: var(--spacing-xs);
 }
 
-.exercise-card__name {
+.set-card__name {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
   margin: 0;
 }
 
-.exercise-card__duration {
+.set-card__duration {
   font-size: var(--font-size-base);
   color: var(--color-text-light);
 }
 
-.exercise-card__description {
+.set-card__description {
   font-size: var(--font-size-base);
   color: var(--color-text-light);
   margin: 0;

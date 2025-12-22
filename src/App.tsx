@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./views/Home/Home";
-import { ExerciseList } from "./views/ExerciseList/ExerciseList";
+import { WorkoutDetailView } from "./views/WorkoutDetailView/WorkoutDetailView";
 import { TimerView } from "./views/TimerView/TimerView";
 import "./styles/index.css";
 
@@ -9,7 +9,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/exercises" element={<ExerciseList />} />
+        <Route path="/workout-detail" element={<WorkoutDetailView />} />
         <Route path="/timer" element={<TimerView />} />
       </Routes>
     </BrowserRouter>

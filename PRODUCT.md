@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Progressive Web App (PWA) designed for mobile morning exercises. The app provides a full-screen workout timer experience that eliminates common issues with traditional timers by providing a countdown before each exercise starts and clear visual/audio feedback.
+A Progressive Web App (PWA) designed for mobile morning workouts. The app provides a full-screen workout timer experience that eliminates common issues with traditional timers by providing a countdown before each set starts and clear visual/audio feedback.
 
 ## Core Problem
 
@@ -10,17 +10,17 @@ Traditional timers often:
 
 - Require stopping beeping manually (unnecessary interruption)
 - Start immediately without giving time to prepare
-- Don't provide clear visual feedback during exercises
+- Don't provide clear visual feedback during workouts
 - Don't help guiding the workout
 
 ## Solution
 
 A PWA that provides:
 
-- Pre-exercise countdown (3 seconds) to allow preparation
+- Pre-set countdown (3 seconds) to allow preparation
 - Full-screen activity display with clear visual feedback
-- Automatic progression through exercises
-- Audio feedback (beep sounds) for exercise start and end
+- Automatic progression through sets
+- Audio feedback (beep sounds) for set start and end
 
 ## Design
 
@@ -48,10 +48,10 @@ A PWA that provides:
   - Can edit existing workouts
   - Can create new workouts
 
-### 2. Exercise List View
+### 2. Workout Detail View
 
-- **Layout**: List of exercise items displayed as small cards
-- **Card Structure** (per exercise):
+- **Layout**: List of set items displayed as small cards
+- **Card Structure** (per set):
   - Activity name and duration (top row)
   - Description (below)
 - **Navigation**:
@@ -60,7 +60,7 @@ A PWA that provides:
   - Exit button (top nav bar, returns to home)
 - **Actions**:
   - Tap "Start" to begin the workout
-  - Can scroll through exercises before starting
+  - Can scroll through sets before starting
   - Can go back to workout selection
 
 ### 3. Activity Timer View (Full Screen)
@@ -117,7 +117,7 @@ A PWA that provides:
 - **Top Nav Bar**: Always visible
   - Exit button (top left) - returns to home
   - Centered content (step indicator, etc.)
-- **Back Button**: Available on exercise list view
+- **Back Button**: Available on workout detail view
 
 ## Design System
 
@@ -149,7 +149,7 @@ A PWA that provides:
 - Structure:
   - Name
   - Description
-  - List of exercises, where each exercise consists of sets (each set with name, duration, description)
+  - List of sets (each set with name, duration, description)
 
 ## Technical Requirements
 
@@ -200,7 +200,7 @@ A PWA that provides:
 
 ## User Interactions
 
-### Exercise Navigation
+### Set Navigation
 
 - **Forward**: "Next" button after set completes
 - **Backward**: Can go back to previous sets
@@ -218,7 +218,7 @@ A PWA that provides:
 
 - Background state: Timer continues (or pauses based on implementation)
 - Last set: Shows "Finish" instead of "Next"
-- First set: Can still go backward (returns to exercise list or stays on first)
+- First set: Can still go backward (returns to workout detail view or stays on first)
 
 ## Success Metrics
 

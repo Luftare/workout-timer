@@ -3,9 +3,9 @@ import { useTimerStore } from "../../store/timerStore";
 import { Nav } from "../../components/Nav/Nav";
 import { SetCard } from "../../components/SetCard/SetCard";
 import { Button } from "../../components/Button/Button";
-import "./ExerciseList.css";
+import "./WorkoutDetailView.css";
 
-export const ExerciseList = () => {
+export const WorkoutDetailView = () => {
   const navigate = useNavigate();
   const selectedWorkout = useTimerStore((state) => state.selectedWorkout);
   const setSets = useTimerStore((state) => state.setSets);
@@ -27,9 +27,9 @@ export const ExerciseList = () => {
 
   if (!selectedWorkout) {
     return (
-      <div className="exercise-list">
+      <div className="workout-detail">
         <Nav onExit={handleExit} />
-        <div className="exercise-list__content">
+        <div className="workout-detail__content">
           <p>No workout selected. Please select a workout from the home screen.</p>
         </div>
       </div>
@@ -37,15 +37,15 @@ export const ExerciseList = () => {
   }
 
   return (
-    <div className="exercise-list">
+    <div className="workout-detail">
       <Nav onBack={handleBack} onExit={handleExit} />
-      <div className="exercise-list__content">
-        <div className="exercise-list__exercises">
+      <div className="workout-detail__content">
+        <div className="workout-detail__sets">
           {selectedWorkout.sets.map((set) => (
             <SetCard key={set.id} set={set} />
           ))}
         </div>
-        <div className="exercise-list__actions">
+        <div className="workout-detail__actions">
           <Button onClick={handleStart}>Start</Button>
         </div>
       </div>

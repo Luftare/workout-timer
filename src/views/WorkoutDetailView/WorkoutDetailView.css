@@ -1,11 +1,11 @@
-.exercise-list {
+.workout-detail {
   width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.exercise-list__content {
+.workout-detail__content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -13,12 +13,12 @@
   padding-top: var(--spacing-lg);
 }
 
-.exercise-list__exercises {
+.workout-detail__sets {
   flex: 1;
   margin-bottom: var(--spacing-xl);
 }
 
-.exercise-list__actions {
+.workout-detail__actions {
   position: sticky;
   bottom: 0;
   padding: var(--spacing-md) 0;

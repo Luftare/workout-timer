@@ -21,4 +21,3 @@ export const WorkoutCard = ({ workout, onSelect }: WorkoutCardProps) => {
     </div>
   );
 };
-

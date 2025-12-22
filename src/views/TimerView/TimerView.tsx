@@ -185,7 +185,7 @@ export const TimerView = () => {
   const handleDone = () => {
     const isLast = isLastSet();
     if (isLast) {
-      navigate("/exercises");
+      navigate("/workout-detail");
       reset();
       return;
     }
@@ -204,7 +204,7 @@ export const TimerView = () => {
   const handleNext = () => {
     const isLast = isLastSet();
     if (isLast) {
-      navigate("/exercises");
+      navigate("/workout-detail");
       reset();
       return;
     }
@@ -221,7 +221,7 @@ export const TimerView = () => {
   };
 
   const handleBack = () => {
-    navigate("/exercises");
+    navigate("/workout-detail");
     reset();
   };
 
@@ -297,7 +297,7 @@ export const TimerView = () => {
     }
   }
 
-  const exerciseContent = (
+  const workoutContent = (
     <>
       <Headline>
         {currentSet.name} {timingMessage}
@@ -306,9 +306,9 @@ export const TimerView = () => {
     </>
   );
 
-  const exerciseCompletedContent = (
+  const workoutCompletedContent = (
     <>
-      <Headline>Exercise Completed</Headline>
+      <Headline>Workout Completed</Headline>
       <Paragraph>Well done!</Paragraph>
     </>
   );
@@ -329,7 +329,7 @@ export const TimerView = () => {
 
       <div className="timer-view__main">
         <div className="timer-view__content">
-          {completedLastSet ? exerciseCompletedContent : exerciseContent}
+          {completedLastSet ? workoutCompletedContent : workoutContent}
 
           {/* Show next set preview during rest */}
           {shouldShowNextPreview && (

@@ -8,7 +8,7 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Features**:
 
-- Single hard-coded exercise (e.g., "Pushups" for 30 seconds)
+- Single hard-coded workout (e.g., "Pushups" for 30 seconds)
 - Full-screen activity view
 - "Start Countdown" button (pulsating)
 - 3-second countdown before timer starts
@@ -35,7 +35,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - [x] Build Paragraph component
 - [x] Create timer logic (countdown → timer → completion)
 - [x] Implement progress bar animation (full-height background)
-- [x] Create single exercise timer view
+- [x] Create single workout timer view
 - [x] Style with minimal, spacious design (left-aligned, big bold text)
 
 **Acceptance Criteria**:
@@ -49,19 +49,19 @@ This document outlines the iterative development plan. Each iteration produces a
 
 ---
 
-## Iteration 2: Exercises
+## Iteration 2: Workouts
 
-**Goal**: User can see hard-coded exercises with different timer durations, names and descriptions. Each exercise consists of sets.
+**Goal**: User can see hard-coded workouts with different timer durations, names and descriptions. Each workout consists of sets.
 
 **Features**:
 
-- Hard-coded exercise list with sets (e.g., 30s pushups, 60s rest, 30s pushups)
-- Exercise list view with small cards showing:
+- Hard-coded workout list with sets (e.g., 30s pushups, 60s rest, 30s pushups)
+- Workout detail view with small cards showing:
   - Activity name and duration (top row)
   - Description (below)
 - Static "Start" button (always visible)
 - Back button (top of page)
-- Navigation from exercise list to timer view
+- Navigation from workout detail view to timer view
 - Step indicator (e.g., "1 of 3") on timer view
 - "Next" button after set completes
 - Navigate through sets sequentially
@@ -69,27 +69,27 @@ This document outlines the iterative development plan. Each iteration produces a
 **Components to Build**:
 
 - Nav component (with exit button placeholder)
-- Exercise card component
-- Exercise list view
+- Set card component
+- Workout detail view
 
 **Technical Tasks**:
 
-- [x] Create hard-coded exercise data structure
-- [x] Build ExerciseList view component
-- [x] Build exercise card component
+- [x] Create hard-coded workout data structure
+- [x] Build WorkoutDetailView view component
+- [x] Build set card component
 - [x] Add Nav component (basic structure)
-- [x] Implement routing: ExerciseList → TimerView
+- [x] Implement routing: WorkoutDetailView → TimerView
 - [x] Add step indicator to timer view
 - [x] Implement "Next" button logic
-- [x] Track current exercise index in Zustand
-- [x] Handle last exercise (show "Finish" instead of "Next")
-- [x] Add back button to exercise list
-- [x] Style exercise cards (minimal, spacious)
+- [x] Track current set index in Zustand
+- [x] Handle last set (show "Finish" instead of "Next")
+- [x] Add back button to workout detail view
+- [x] Style set cards (minimal, spacious)
 
 **Acceptance Criteria**:
 
-- User sees list of exercises with sets (names, durations, descriptions)
-- User can scroll through exercises
+- User sees list of workouts with sets (names, durations, descriptions)
+- User can scroll through sets
 - User can tap "Start" to begin workout
 - Timer view shows current set with step indicator
 - After timer completes, "Set Completed" message and "Next" button appears
@@ -106,7 +106,7 @@ This document outlines the iterative development plan. Each iteration produces a
 
 - Home screen with workout cards
 - Each card shows: workout name, description, "Select" button
-- Navigation: Home → Exercise List → Timer View
+- Navigation: Home → Workout Detail → Timer View
 - Exit button in Nav (returns to home)
 - Multiple hard-coded workouts
 
@@ -122,7 +122,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - [x] Build Home view component
 - [x] Build workout card component
 - [x] Complete Nav component with exit button
-- [x] Implement routing: Home → ExerciseList → TimerView
+- [x] Implement routing: Home → WorkoutDetailView → TimerView
 - [x] Add exit button functionality (navigate to home)
 - [x] Update Zustand store for workout selection
 - [x] Style home screen (cards, spacing, lime theme)
@@ -132,7 +132,7 @@ This document outlines the iterative development plan. Each iteration produces a
 
 - User sees home screen with workout cards
 - User can tap "Select" to choose a workout
-- User navigates to exercise list for selected workout
+- User navigates to workout detail view for selected workout
 - Exit button returns to home from any view
 - Nav bar is always visible
 
@@ -146,7 +146,7 @@ This document outlines the iterative development plan. Each iteration produces a
 
 - Pause/Continue functionality during timer
 - Skip forward/backward between sets
-- Backward navigation from timer to exercise list
+- Backward navigation from timer to workout detail view
 - Completion screen with "Awesome!" message
 - "Close" button on completion screen returns to home
 - Proper state management for all navigation flows
@@ -167,7 +167,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - [ ] Add confetti animation (basic implementation)
 - [ ] Implement "Finish" button → completion screen
 - [ ] Add "Close" button on completion screen
-- [ ] Handle backward navigation from timer to exercise list
+- [ ] Handle backward navigation from timer to workout detail view
 - [ ] Update Zustand store for all navigation states
 - [ ] Ensure smooth state transitions
 
@@ -176,7 +176,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - User can pause timer during set
 - User can continue paused timer
 - User can skip to next/previous set
-- User can go back from timer to exercise list
+- User can go back from timer to workout detail view
 - Completion screen appears after last set
 - User can return to home from completion screen
 - All navigation flows work smoothly
@@ -230,19 +230,19 @@ This document outlines the iterative development plan. Each iteration produces a
 - Delete workouts
 - Workouts persisted in localStorage
 - Workout editor/form interface
-- Add/remove sets from exercises in workouts
+- Add/remove sets from workouts
 - Edit set details (name, duration, description)
 
 **Components to Build**:
 
 - Workout editor component
-- Exercise editor component
+- Set editor component
 - Form components
 
 **Technical Tasks**:
 
 - [ ] Create workout editor view
-- [ ] Create exercise editor component
+- [ ] Create set editor component
 - [ ] Implement "Create Workout" flow
 - [ ] Implement "Edit Workout" flow
 - [ ] Add delete workout functionality
@@ -260,7 +260,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - User can delete workouts
 - Workouts are saved to localStorage
 - Workouts persist across app sessions
-- User can add/remove sets from exercises in workouts
+- User can add/remove sets from workouts
 - User can edit set details
 
 ---

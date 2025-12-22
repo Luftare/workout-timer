@@ -12,7 +12,7 @@ export const Home = () => {
     const workout = DEFAULT_WORKOUTS.find((w) => w.id === workoutId);
     if (workout) {
       setSelectedWorkout(workout);
-      navigate("/exercises");
+      navigate("/workout-detail");
     }
   };
 

@@ -23,11 +23,10 @@ export const SetCard = ({ set }: SetCardProps) => {
       <div className="set-card__header">
         <h3 className="set-card__name">{set.name}</h3>
         <span className="set-card__duration">
-          {formatDuration(set.durationSeconds)}
+          {set.isTimed ? formatDuration(set.durationSeconds) : "-"}
         </span>
       </div>
       <p className="set-card__description">{set.description}</p>
     </div>
   );
 };
-

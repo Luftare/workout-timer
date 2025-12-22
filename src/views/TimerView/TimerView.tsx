@@ -279,10 +279,21 @@ export const TimerView = () => {
     return isLast ? "Finish" : "Next";
   };
 
-  const getCompletionMessage = () => {
-    const isLast = isLastSet();
-    return isLast ? "Exercise Completed" : "Set Completed";
-  };
+  let timingMessage = "";
+  if (isTimedSet) {
+    if (isRunningState) {
+      timingMessage = formatTime(timerRemaining);
+    } else if (isCountdownState) {
+      timingMessage = `${Math.ceil(countdownRemaining / 1000)}`;
+    } else {
+      // Show set duration in 01:20 format
+      timingMessage = `${Math.floor(currentSet.durationSeconds / 60)
+        .toString()
+        .padStart(2, "0")}:${(currentSet.durationSeconds % 60)
+        .toString()
+        .padStart(2, "0")}`;
+    }
+  }
 
   return (
     <div className="timer-view">
@@ -296,33 +307,10 @@ export const TimerView = () => {
 
       <div className="timer-view__main">
         <div className="timer-view__content">
-          <Headline>{currentSet.name}</Headline>
+          <Headline>
+            {currentSet.name} {timingMessage}
+          </Headline>
           <Paragraph>{currentSet.description}</Paragraph>
-
-          {/* Only show countdown/timer for timed sets */}
-          {isTimedSet && (
-            <>
-              {isCountdownState && (
-                <div className="timer-view__countdown">
-                  <Headline>
-                    {"Get Ready"} {Math.ceil(countdownRemaining / 1000)}
-                  </Headline>
-                </div>
-              )}
-
-              {isRunningState && (
-                <div className="timer-view__timer">
-                  <Headline>{formatTime(timerRemaining)}</Headline>
-                </div>
-              )}
-
-              {isCompletedState && (
-                <div className="timer-view__completed">
-                  <Headline>{getCompletionMessage()}</Headline>
-                </div>
-              )}
-            </>
-          )}
 
           {/* Show next set preview during rest */}
           {shouldShowNextPreview && (

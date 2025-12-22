@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { COUNTDOWN_DURATION_MS } from "../constants/constants";
 import { Set } from "../data/sets";
+import { Workout } from "../data/workouts";
 
 type TimerState = "idle" | "countdown" | "running" | "paused" | "completed";
 
@@ -10,6 +11,8 @@ interface TimerStore {
   currentSetIndex: number;
   countdownRemaining: number;
   timerRemaining: number;
+  selectedWorkout: Workout | null;
+  setSelectedWorkout: (workout: Workout) => void;
   setSets: (sets: Set[]) => void;
   startCountdown: () => void;
   startTimer: () => void;
@@ -31,6 +34,10 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   currentSetIndex: 0,
   countdownRemaining: COUNTDOWN_DURATION_MS,
   timerRemaining: 0,
+  selectedWorkout: null,
+  setSelectedWorkout: (workout: Workout) => {
+    set({ selectedWorkout: workout, sets: workout.sets });
+  },
   setSets: (sets: Set[]) =>
     set({
       sets,

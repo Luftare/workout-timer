@@ -29,7 +29,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - [x] Set up React Router (basic routing)
 - [x] Set up Zustand store (basic timer state)
 - [x] Create constants.ts (COUNTDOWN_DURATION_MS, etc.)
-- [x] Create index.css with CSS variables (orange theme)
+- [x] Create index.css with CSS variables (lime theme)
 - [x] Build Button component with pulsate animation
 - [x] Build Headline component (large size)
 - [x] Build Paragraph component
@@ -118,15 +118,15 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Technical Tasks**:
 
-- [ ] Create hard-coded workout data structure
-- [ ] Build Home view component
-- [ ] Build workout card component
-- [ ] Complete Nav component with exit button
-- [ ] Implement routing: Home → ExerciseList → TimerView
-- [ ] Add exit button functionality (navigate to home)
-- [ ] Update Zustand store for workout selection
-- [ ] Style home screen (cards, spacing, orange theme)
-- [ ] Ensure Nav is always visible
+- [x] Create hard-coded workout data structure
+- [x] Build Home view component
+- [x] Build workout card component
+- [x] Complete Nav component with exit button
+- [x] Implement routing: Home → ExerciseList → TimerView
+- [x] Add exit button functionality (navigate to home)
+- [x] Update Zustand store for workout selection
+- [x] Style home screen (cards, spacing, lime theme)
+- [x] Ensure Nav is always visible
 
 **Acceptance Criteria**:
 

@@ -225,10 +225,15 @@ export const TimerView = () => {
     reset();
   };
 
+  const handleExit = () => {
+    navigate("/");
+    reset();
+  };
+
   if (!currentSet) {
     return (
       <div className="timer-view">
-        <Nav onBack={handleBack} />
+        <Nav onBack={handleBack} onExit={handleExit} />
         <div className="timer-view__main">
           <div className="timer-view__content">
             <Headline>No set selected</Headline>
@@ -310,7 +315,11 @@ export const TimerView = () => {
 
   return (
     <div className="timer-view">
-      <Nav onBack={handleBack} centerContent={<span>{stepIndicator}</span>} />
+      <Nav
+        onBack={handleBack}
+        onExit={handleExit}
+        centerContent={<span>{stepIndicator}</span>}
+      />
       {shouldShowProgressBar && (
         <div
           className="timer-view__progress-bar"

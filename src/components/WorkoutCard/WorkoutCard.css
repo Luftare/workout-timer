@@ -1,0 +1,57 @@
+.workout-card {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  background-color: transparent;
+  border: 1px solid rgba(50, 205, 50, 0.3);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  transition: border-color var(--animation-duration-fast) ease;
+}
+
+.workout-card:hover {
+  border-color: var(--color-primary);
+}
+
+.workout-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.workout-card__name {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.workout-card__description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.workout-card__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.workout-card__select-button {
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color var(--animation-duration-fast) ease;
+}
+
+.workout-card__select-button:hover {
+  background-color: var(--color-primary-dark);
+}
+

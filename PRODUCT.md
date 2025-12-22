@@ -29,7 +29,7 @@ A PWA that provides:
 - Strong nudge towards the success path (=start excercise)
 - Native app feel
 - Brand references: Adidas, Nike
-- Color: Orange, Yellow, Black
+- Color: Lime, Yellow, Black
 - Big bold texts
 - Lots of air and spaciousness
 
@@ -123,7 +123,7 @@ A PWA that provides:
 
 ### Colors
 
-- **Primary**: Energetic orange (solid color throughout)
+- **Primary**: Energetic lime (solid color throughout)
 - **Background**: White space for separation
 - **Progress Bar**: Full-height background color that animates from left to right
 

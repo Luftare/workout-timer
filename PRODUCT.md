@@ -17,7 +17,7 @@ Traditional timers often:
 
 A PWA that provides:
 
-- Pre-exercise countdown (5 seconds) to allow preparation
+- Pre-exercise countdown (3 seconds) to allow preparation
 - Full-screen activity display with clear visual feedback
 - Automatic progression through exercises
 - Audio feedback (beep sounds) for exercise start and end
@@ -80,7 +80,7 @@ A PWA that provides:
 
   **b) Countdown State:**
 
-  - 5-second countdown displayed
+  - 3-second countdown displayed
   - High-pitch beep sound plays once when countdown starts
   - Progress bar appears at bottom (full-height background color)
 
@@ -208,7 +208,7 @@ A PWA that provides:
 
 ### Timer Controls
 
-- **Start**: Begin countdown (5 seconds)
+- **Start**: Begin countdown (3 seconds)
 - **Pause**: Pause timer during exercise
 - **Continue**: Resume paused timer
 - **Next/Finish**: Move to next exercise or complete workout

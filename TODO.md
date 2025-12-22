@@ -11,7 +11,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - Single hard-coded exercise (e.g., "Pushups" for 30 seconds)
 - Full-screen activity view
 - "Start Countdown" button (pulsating)
-- 5-second countdown before timer starts
+- 3-second countdown before timer starts
 - Timer displays remaining time (e.g., "0:30")
 - Full-height progress bar (background color) animates from left to right
 - Timer completes and shows completion state
@@ -25,23 +25,23 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Technical Tasks**:
 
-- [ ] Set up React + TypeScript project
-- [ ] Set up React Router (basic routing)
-- [ ] Set up Zustand store (basic timer state)
-- [ ] Create constants.ts (COUNTDOWN_DURATION_MS, etc.)
-- [ ] Create index.css with CSS variables (orange theme)
-- [ ] Build Button component with pulsate animation
-- [ ] Build Headline component (large size)
-- [ ] Build Paragraph component
-- [ ] Create timer logic (countdown → timer → completion)
-- [ ] Implement progress bar animation (full-height background)
-- [ ] Create single exercise timer view
-- [ ] Style with minimal, spacious design (left-aligned, big bold text)
+- [x] Set up React + TypeScript project
+- [x] Set up React Router (basic routing)
+- [x] Set up Zustand store (basic timer state)
+- [x] Create constants.ts (COUNTDOWN_DURATION_MS, etc.)
+- [x] Create index.css with CSS variables (orange theme)
+- [x] Build Button component with pulsate animation
+- [x] Build Headline component (large size)
+- [x] Build Paragraph component
+- [x] Create timer logic (countdown → timer → completion)
+- [x] Implement progress bar animation (full-height background)
+- [x] Create single exercise timer view
+- [x] Style with minimal, spacious design (left-aligned, big bold text)
 
 **Acceptance Criteria**:
 
 - User can tap "Start Countdown" button
-- 5-second countdown appears
+- 3-second countdown appears
 - Timer starts automatically after countdown
 - Progress bar animates smoothly
 - Timer shows remaining time

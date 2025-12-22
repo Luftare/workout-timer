@@ -1,0 +1,49 @@
+.timer-view {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-xl);
+  padding-top: var(--spacing-xxl);
+}
+
+.timer-view__progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background-color: var(--color-accent);
+  opacity: 0.2;
+  z-index: 0;
+  transition: width 0.1s linear;
+}
+
+.timer-view__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 800px;
+}
+
+.timer-view__countdown {
+  margin-top: var(--spacing-xl);
+}
+
+.timer-view__timer {
+  margin-top: var(--spacing-xl);
+}
+
+.timer-view__completed {
+  margin-top: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.timer-view__actions {
+  margin-top: var(--spacing-md);
+}
+

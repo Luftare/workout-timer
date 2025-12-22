@@ -1,0 +1,14 @@
+.headline {
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.headline--large {
+  font-size: var(--font-size-xxxl);
+}
+
+.headline--medium {
+  font-size: var(--font-size-xxl);
+}
+

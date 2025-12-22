@@ -1,0 +1,9 @@
+---
+alwaysApply: false
+---
+
+Implement the next unimplemented iteration. The user will test the product after you have implemented the listed features.
+
+Treat the iterations as best guess. The spec will likely change as new things are discovered during the process. The iterations may be rewritten during the process.
+
+Always mark the completed items in the TODO.md to keep it up to date.

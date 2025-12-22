@@ -1,0 +1,176 @@
+---
+alwaysApply: true
+---
+
+# Coding Style Rules for Workout Timer PWA
+
+## Architecture & Organization
+
+### Component Structure
+
+- Split the app into small, reusable components
+- Each component should have its own CSS file (e.g., `Button.css`, `Headline.css`)
+- Import component CSS files directly in the component file
+- Prefer CSS files over inline styles
+
+### State Management
+
+- Use Zustand for state management
+- Use HOCs (Higher Order Components) for state when appropriate
+- Keep state logic separate from presentation components
+
+### Routing
+
+- Use React Router for navigation
+- Implement proper route structure for all views
+
+## Code Quality
+
+### Constants & Magic Numbers
+
+- **NO magic numbers** - assign all numbers to variables with descriptive names
+- Store app-wide constants in `constants.ts`
+- Use descriptive variable names that explain the purpose
+
+Example:
+
+```typescript
+// ❌ Bad
+setTimeout(() => {}, 5000);
+
+// ✅ Good
+const COUNTDOWN_DURATION_MS = 5000;
+setTimeout(() => {}, COUNTDOWN_DURATION_MS);
+```
+
+### TypeScript
+
+- Use TypeScript for all components and utilities
+- Define proper types and interfaces
+- Avoid `any` types
+
+## Styling
+
+### CSS Variables
+
+- Define all CSS variables in `index.css`
+- Reference CSS variables in component CSS files
+- Use variables for colors, spacing, durations, etc.
+
+### CSS Organization
+
+- Each component has its own CSS file
+- Import CSS in the component file: `import './Button.css'`
+- Use CSS variables from `index.css` for theming
+
+Example:
+
+```css
+/* index.css */
+:root {
+  --color-primary: #ff6600;
+  --spacing-large: 2rem;
+}
+
+/* Button.css */
+.button {
+  background-color: var(--color-primary);
+  padding: var(--spacing-large);
+}
+```
+
+## Component Guidelines
+
+### Required Components
+
+Create these reusable components with proper props:
+
+1. **Button**
+
+   - Accept `pulsate` prop (boolean) to conditionally add pulsating animation
+   - Use for all CTA buttons
+   - Apply pulsating style to "Start Countdown" and "Continue" buttons
+
+2. **Headline**
+
+   - Two sizes (large and medium)
+   - Accept size prop or variant prop
+   - Used for activity names, workout names, page titles
+
+3. **Paragraph**
+
+   - Standard text component
+   - Used for descriptions and body text
+
+4. **Nav**
+   - Top navigation bar component
+   - Contains exit button and centered content area
+   - Always visible in the app
+
+### Component Props
+
+- Use descriptive prop names
+- Provide proper TypeScript types for all props
+- Use default props where appropriate
+
+## File Structure
+
+```
+/src
+  /components
+    Button/
+      Button.tsx
+      Button.css
+    Headline/
+      Headline.tsx
+      Headline.css
+    Paragraph/
+      Paragraph.tsx
+      Paragraph.css
+    Nav/
+      Nav.tsx
+      Nav.css
+  /constants
+    constants.ts
+  /styles
+    index.css
+  ...
+```
+
+## Best Practices
+
+### State Persistence
+
+- Use localStorage for:
+  - Workout data
+  - App state (current route, exercise index, timer state)
+- Ensure app resumes where it left off
+
+### Audio
+
+- Use Web Audio API for beep sounds
+- High-pitch beep when exercise countdown starts
+- Beep when exercise timer completes
+
+### Animations
+
+- Pulsating buttons for "Start Countdown" and "Continue"
+- Confetti animation on completion screen
+- Smooth progress bar animation
+
+### Error Handling
+
+- Handle edge cases gracefully
+- Provide fallbacks for missing data
+- Validate localStorage data on app load
+
+## Code Review Checklist
+
+- [ ] No magic numbers (all in constants.ts)
+- [ ] CSS variables used from index.css
+- [ ] Component-specific CSS files (not inline styles)
+- [ ] TypeScript types defined
+- [ ] Components are small and reusable
+- [ ] State managed with Zustand
+- [ ] HOCs used for state when appropriate
+- [ ] Descriptive variable and function names

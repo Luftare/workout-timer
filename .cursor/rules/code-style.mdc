@@ -50,6 +50,13 @@ setTimeout(() => {}, COUNTDOWN_DURATION_MS);
 - Define proper types and interfaces
 - Avoid `any` types
 
+### No chained boolean logic
+
+- Never do nested ternary operators
+- Assign boolean results in constants and apply only one boolean operation per constant
+- In case of more than 2 boolean operations, create a dedicated function for determining the boolean value such as "shouldShowGuide()"
+- Don't create aliases for existing boolean flags
+
 ## Styling
 
 ### CSS Variables

@@ -34,6 +34,18 @@ export const TimerView = () => {
   const countdownIntervalRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<number | null>(null);
 
+  // Boolean flags
+  const isNonTimedSet = currentSet !== null && !currentSet.isTimed;
+  const isTimedSet = currentSet !== null && currentSet.isTimed;
+  const isCountdownState = state === "countdown";
+  const isRunningState = state === "running";
+  const isIdleState = state === "idle";
+  const isCompletedState = state === "completed";
+  const isPausedState = state === "paused";
+  const isCurrentSetRest = currentSet?.isRest === true;
+  const isNextSetNotRest = nextSetData !== null && !nextSetData.isRest;
+  const shouldShowProgressBar = !isCountdownState && isTimedSet;
+
   // Format time in MM:SS format
   const formatTime = (ms: number): string => {
     const totalSeconds = Math.ceil(ms / 1000);
@@ -44,15 +56,16 @@ export const TimerView = () => {
 
   // Calculate progress percentage (0-100)
   const getProgress = (): number => {
-    if (!currentSet) return 0;
+    if (!isTimedSet) return 0;
 
-    if (state === "countdown") {
+    if (isCountdownState) {
       return (
         ((COUNTDOWN_DURATION_MS - countdownRemaining) / COUNTDOWN_DURATION_MS) *
         100
       );
     }
-    if (state === "running" || state === "paused") {
+    const isTimerActive = isRunningState || isPausedState;
+    if (isTimerActive && currentSet) {
       const setDurationMs = currentSet.durationSeconds * 1000;
       return ((setDurationMs - timerRemaining) / setDurationMs) * 100;
     }
@@ -63,9 +76,10 @@ export const TimerView = () => {
     ? `${currentSetIndex + 1} of ${sets.length}`
     : "";
 
-  // Handle countdown
+  // Handle countdown (only for timed sets)
   useEffect(() => {
-    if (state === "countdown") {
+    const shouldRunCountdown = isCountdownState && isTimedSet;
+    if (shouldRunCountdown) {
       countdownIntervalRef.current = window.setInterval(() => {
         useTimerStore
           .getState()
@@ -96,11 +110,12 @@ export const TimerView = () => {
         countdownIntervalRef.current = null;
       }
     };
-  }, [state]);
+  }, [state, currentSet?.isTimed]);
 
-  // Handle timer
+  // Handle timer (only for timed sets)
   useEffect(() => {
-    if (state === "running") {
+    const shouldRunTimer = isRunningState && isTimedSet;
+    if (shouldRunTimer) {
       // Clear any existing interval first
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -125,22 +140,20 @@ export const TimerView = () => {
           const currentSetData = store.getCurrentSet();
           const nextSetData = store.getNextSet();
 
-          // If current is rest and completes, move to next set (idle state)
-          if (
-            currentSetData &&
-            currentSetData.isRest &&
-            nextSetData &&
-            !nextSetData.isRest
-          ) {
+          const hasCurrentSet = currentSetData !== null;
+          const hasNextSet = nextSetData !== null;
+          const isCurrentSetRest = currentSetData?.isRest === true;
+          const isNextSetRest = nextSetData?.isRest === true;
+          const isNextSetNotRest = nextSetData !== null && !nextSetData.isRest;
+
+          const shouldMoveToNextSet =
+            hasCurrentSet && isCurrentSetRest && hasNextSet && isNextSetNotRest;
+          const shouldAutoStartRest =
+            hasCurrentSet && !isCurrentSetRest && hasNextSet && isNextSetRest;
+
+          if (shouldMoveToNextSet) {
             store.nextSet();
-          }
-          // Auto-start rest if next set is rest
-          else if (
-            currentSetData &&
-            !currentSetData.isRest &&
-            nextSetData &&
-            nextSetData.isRest
-          ) {
+          } else if (shouldAutoStartRest) {
             store.startRestAutomatically();
           } else {
             useTimerStore.setState({ state: "completed" });
@@ -160,25 +173,47 @@ export const TimerView = () => {
         timerIntervalRef.current = null;
       }
     };
-  }, [state, currentSetIndex]);
+  }, [state, currentSetIndex, currentSet?.isTimed]);
 
   const handleStartCountdown = () => {
     startCountdown();
   };
 
-  const handleNext = () => {
-    if (isLastSet()) {
-      // Navigate back to exercise list when finished
+  const handleDone = () => {
+    const isLast = isLastSet();
+    if (isLast) {
       navigate("/exercises");
       reset();
+      return;
+    }
+
+    const nextSetInfo = getNextSet();
+    const hasNextSet = nextSetInfo !== null;
+    const isNextRest = nextSetInfo?.isRest === true;
+
+    if (hasNextSet && isNextRest) {
+      startRestAutomatically();
     } else {
-      const nextSetInfo = getNextSet();
-      // If next is rest, auto-start it
-      if (nextSetInfo && nextSetInfo.isRest) {
-        startRestAutomatically();
-      } else {
-        nextSet();
-      }
+      nextSet();
+    }
+  };
+
+  const handleNext = () => {
+    const isLast = isLastSet();
+    if (isLast) {
+      navigate("/exercises");
+      reset();
+      return;
+    }
+
+    const nextSetInfo = getNextSet();
+    const hasNextSet = nextSetInfo !== null;
+    const isNextRest = nextSetInfo?.isRest === true;
+
+    if (hasNextSet && isNextRest) {
+      startRestAutomatically();
+    } else {
+      nextSet();
     }
   };
 
@@ -200,10 +235,59 @@ export const TimerView = () => {
     );
   }
 
+  // Boolean flags for UI rendering
+  const shouldShowNextPreview =
+    isRunningState &&
+    isCurrentSetRest &&
+    nextSetData !== null &&
+    isNextSetNotRest;
+  const isNonTimedSetInIdle = isNonTimedSet && isIdleState;
+  const isTimedSetInIdle = isTimedSet && isIdleState;
+
+  const shouldShowCompletedButton = () => {
+    if (!isTimedSet || !isCompletedState) {
+      return false;
+    }
+    const isLast = isLastSet();
+    const hasNextNotRest = isNextSetNotRest;
+    return isLast || hasNextNotRest;
+  };
+
+  const shouldShowButton =
+    isNonTimedSetInIdle || isTimedSetInIdle || shouldShowCompletedButton();
+
+  // Functions for button behavior
+  const getButtonOnClick = () => {
+    if (isNonTimedSet) {
+      return handleDone;
+    }
+    if (isIdleState) {
+      return handleStartCountdown;
+    }
+    return handleNext;
+  };
+
+  const getButtonText = () => {
+    if (isNonTimedSet) {
+      const isLast = isLastSet();
+      return isLast ? "Finish" : "Done";
+    }
+    if (isIdleState) {
+      return "Start Countdown";
+    }
+    const isLast = isLastSet();
+    return isLast ? "Finish" : "Next";
+  };
+
+  const getCompletionMessage = () => {
+    const isLast = isLastSet();
+    return isLast ? "Exercise Completed" : "Set Completed";
+  };
+
   return (
     <div className="timer-view">
       <Nav onBack={handleBack} centerContent={<span>{stepIndicator}</span>} />
-      {state !== "countdown" && (
+      {shouldShowProgressBar && (
         <div
           className="timer-view__progress-bar"
           style={{ width: `${getProgress()}%` }}
@@ -215,59 +299,51 @@ export const TimerView = () => {
           <Headline>{currentSet.name}</Headline>
           <Paragraph>{currentSet.description}</Paragraph>
 
-          {state === "countdown" && (
-            <div className="timer-view__countdown">
-              <Headline>
-                {"Get Ready"} {Math.ceil(countdownRemaining / 1000)}
-              </Headline>
-            </div>
-          )}
+          {/* Only show countdown/timer for timed sets */}
+          {isTimedSet && (
+            <>
+              {isCountdownState && (
+                <div className="timer-view__countdown">
+                  <Headline>
+                    {"Get Ready"} {Math.ceil(countdownRemaining / 1000)}
+                  </Headline>
+                </div>
+              )}
 
-          {state === "running" && (
-            <div className="timer-view__timer">
-              <Headline>{formatTime(timerRemaining)}</Headline>
-            </div>
-          )}
+              {isRunningState && (
+                <div className="timer-view__timer">
+                  <Headline>{formatTime(timerRemaining)}</Headline>
+                </div>
+              )}
 
-          {state === "completed" && (
-            <div className="timer-view__completed">
-              <Headline>
-                {isLastSet() ? "Exercise Completed" : "Set Completed"}
-              </Headline>
-            </div>
+              {isCompletedState && (
+                <div className="timer-view__completed">
+                  <Headline>{getCompletionMessage()}</Headline>
+                </div>
+              )}
+            </>
           )}
 
           {/* Show next set preview during rest */}
-          {state === "running" &&
-            currentSet?.isRest &&
-            nextSetData &&
-            !nextSetData.isRest && (
-              <div className="timer-view__next-preview">
-                <div className="timer-view__next-preview-content">
-                  <h3 className="timer-view__next-preview-title">
-                    Next: {nextSetData.name}
-                  </h3>
-                  <p className="timer-view__next-preview-description">
-                    {nextSetData.description}
-                  </p>
-                </div>
+          {shouldShowNextPreview && (
+            <div className="timer-view__next-preview">
+              <div className="timer-view__next-preview-content">
+                <h3 className="timer-view__next-preview-title">
+                  Next: {nextSetData.name}
+                </h3>
+                <p className="timer-view__next-preview-description">
+                  {nextSetData.description}
+                </p>
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
 
-      {(state === "idle" ||
-        (state === "completed" && !nextSetData?.isRest)) && (
+      {/* Show button for non-timed sets or timed sets in idle/completed state */}
+      {shouldShowButton && (
         <div className="timer-view__actions">
-          <Button
-            onClick={state === "idle" ? handleStartCountdown : handleNext}
-          >
-            {state === "idle"
-              ? "Start Countdown"
-              : isLastSet()
-              ? "Finish"
-              : "Next"}
-          </Button>
+          <Button onClick={getButtonOnClick()}>{getButtonText()}</Button>
         </div>
       )}
     </div>

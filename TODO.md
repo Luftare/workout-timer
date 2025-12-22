@@ -144,12 +144,12 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Technical Tasks**:
 
-- [ ] Create manifest.json
-- [ ] Add service worker
-- [ ] Configure PWA settings
+- [x] Create manifest.json
+- [x] Add service worker
+- [x] Configure PWA settings
 - [ ] Test installation on mobile devices
-- [ ] Ensure full-screen experience
-- [ ] Add app icons
+- [x] Ensure full-screen experience
+- [x] Add app icons
 
 ---
 

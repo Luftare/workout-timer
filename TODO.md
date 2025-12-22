@@ -138,48 +138,18 @@ This document outlines the iterative development plan. Each iteration produces a
 
 ---
 
-## Iteration 4: Navigation & State Management
+## Iteration 4: PWA Setup
 
-**Goal**: Full navigation flow with skip, backward, pause/continue.
-
-**Features**:
-
-- Pause/Continue functionality during timer
-- Skip forward/backward between sets
-- Backward navigation from timer to workout detail view
-- Completion screen with "Awesome!" message
-- "Close" button on completion screen returns to home
-- Proper state management for all navigation flows
-
-**Components to Build**:
-
-- Completion screen component
-- Enhanced timer controls
+**Goal**: Make app installable as PWA.
 
 **Technical Tasks**:
 
-- [ ] Implement pause/continue logic in timer
-- [ ] Add "Pause" button during timer
-- [ ] Add "Continue" button (pulsating) when paused
-- [ ] Implement skip forward/backward functionality
-- [ ] Add navigation controls to timer view (skip buttons)
-- [ ] Build completion screen component
-- [ ] Add confetti animation (basic implementation)
-- [ ] Implement "Finish" button → completion screen
-- [ ] Add "Close" button on completion screen
-- [ ] Handle backward navigation from timer to workout detail view
-- [ ] Update Zustand store for all navigation states
-- [ ] Ensure smooth state transitions
-
-**Acceptance Criteria**:
-
-- User can pause timer during set
-- User can continue paused timer
-- User can skip to next/previous set
-- User can go back from timer to workout detail view
-- Completion screen appears after last set
-- User can return to home from completion screen
-- All navigation flows work smoothly
+- [ ] Create manifest.json
+- [ ] Add service worker
+- [ ] Configure PWA settings
+- [ ] Test installation on mobile devices
+- [ ] Ensure full-screen experience
+- [ ] Add app icons
 
 ---
 
@@ -191,21 +161,15 @@ This document outlines the iterative development plan. Each iteration produces a
 
 - High-pitch beep when countdown starts (Web Audio API)
 - Beep sound when timer completes
-- Confetti animation on completion screen (full implementation)
-- Refined animations and transitions
-- Pulsating button animations perfected
-- Progress bar animation refined
+- Confetti animation on workout completion screen
 
 **Technical Tasks**:
 
-- [ ] Implement Web Audio API beep function
-- [ ] Add high-pitch beep when countdown starts
-- [ ] Add beep when timer completes
+- [ ] Implement Web Audio API beep function, initiate the audio engine upon selecting a workout
+- [ ] Add high-pitch beep (150ms) when countdown starts
+- [ ] Add lower and a bit longer (500ms) beep when timer completes
 - [ ] Integrate confetti library
-- [ ] Refine confetti animation on completion screen
-- [ ] Polish pulsating button animation
-- [ ] Refine progress bar animation smoothness
-- [ ] Add smooth transitions between states
+- [ ] Confetti animation on completion screen
 - [ ] Ensure audio works on mobile devices
 - [ ] Test audio volume and pitch
 
@@ -213,8 +177,7 @@ This document outlines the iterative development plan. Each iteration produces a
 
 - High-pitch beep plays when countdown starts
 - Beep plays when timer completes
-- Confetti animates beautifully on completion
-- All animations are smooth and polished
+- Confetti animates beautifully on workout completion
 - Audio works on mobile devices
 
 ---
@@ -265,27 +228,11 @@ This document outlines the iterative development plan. Each iteration produces a
 
 ---
 
-## Post-Iteration: PWA Setup
-
-**Goal**: Make app installable as PWA.
-
-**Technical Tasks**:
-
-- [ ] Create manifest.json
-- [ ] Add service worker
-- [ ] Configure PWA settings
-- [ ] Test installation on mobile devices
-- [ ] Ensure full-screen experience
-- [ ] Add app icons
-
----
-
 ## Notes
 
 - Each iteration should be fully functional and testable
 - Focus on perfecting UX in each iteration before moving forward
 - Get feedback after each iteration
-- Follow coding style rules from `.cursorrules`
 - No magic numbers - use constants.ts
 - Use CSS variables from index.css
 - Component-specific CSS files only

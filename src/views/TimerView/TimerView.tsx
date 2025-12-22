@@ -1,29 +1,35 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTimerStore } from "../../store/timerStore";
 import { Button } from "../../components/Button/Button";
 import { Headline } from "../../components/Headline/Headline";
 import { Paragraph } from "../../components/Paragraph/Paragraph";
+import { Nav } from "../../components/Nav/Nav";
 import {
   COUNTDOWN_DURATION_MS,
-  EXERCISE_DURATION_MS,
   TIMER_UPDATE_INTERVAL_MS,
 } from "../../constants/constants";
 import "./TimerView.css";
 
-const EXERCISE_NAME = "Pushups";
-const EXERCISE_DESCRIPTION = "Do as many pushups as you can in the given time.";
-
 export const TimerView = () => {
+  const navigate = useNavigate();
   const {
     state,
+    exercises,
+    currentExerciseIndex,
     countdownRemaining,
     timerRemaining,
     startCountdown,
-    startTimer,
-    updateCountdown,
-    updateTimer,
+    nextExercise,
     reset,
+    getCurrentExercise,
+    getNextExercise,
+    isLastExercise,
+    startRestAutomatically,
   } = useTimerStore();
+
+  const currentExercise = getCurrentExercise();
+  const nextExerciseData = getNextExercise();
 
   const countdownIntervalRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<number | null>(null);
@@ -38,6 +44,8 @@ export const TimerView = () => {
 
   // Calculate progress percentage (0-100)
   const getProgress = (): number => {
+    if (!currentExercise) return 0;
+
     if (state === "countdown") {
       return (
         ((COUNTDOWN_DURATION_MS - countdownRemaining) / COUNTDOWN_DURATION_MS) *
@@ -45,12 +53,15 @@ export const TimerView = () => {
       );
     }
     if (state === "running" || state === "paused") {
-      return (
-        ((EXERCISE_DURATION_MS - timerRemaining) / EXERCISE_DURATION_MS) * 100
-      );
+      const exerciseDurationMs = currentExercise.durationSeconds * 1000;
+      return ((exerciseDurationMs - timerRemaining) / exerciseDurationMs) * 100;
     }
     return 0;
   };
+
+  const stepIndicator = currentExercise
+    ? `${currentExerciseIndex + 1} of ${exercises.length}`
+    : "";
 
   // Handle countdown
   useEffect(() => {
@@ -90,6 +101,13 @@ export const TimerView = () => {
   // Handle timer
   useEffect(() => {
     if (state === "running") {
+      // Clear any existing interval first
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+
+      // Start new interval
       timerIntervalRef.current = window.setInterval(() => {
         useTimerStore
           .getState()
@@ -103,7 +121,20 @@ export const TimerView = () => {
             clearInterval(timerIntervalRef.current);
             timerIntervalRef.current = null;
           }
-          useTimerStore.setState({ state: "completed" });
+          const store = useTimerStore.getState();
+          const currentEx = store.getCurrentExercise();
+          const nextEx = store.getNextExercise();
+
+          // If current is rest and completes, move to next set (idle state)
+          if (currentEx && currentEx.isRest && nextEx && !nextEx.isRest) {
+            store.nextExercise();
+          }
+          // Auto-start rest if next exercise is rest
+          else if (currentEx && !currentEx.isRest && nextEx && nextEx.isRest) {
+            store.startRestAutomatically();
+          } else {
+            useTimerStore.setState({ state: "completed" });
+          }
         }
       }, TIMER_UPDATE_INTERVAL_MS);
     } else {
@@ -119,54 +150,116 @@ export const TimerView = () => {
         timerIntervalRef.current = null;
       }
     };
-  }, [state]);
+  }, [state, currentExerciseIndex]);
 
   const handleStartCountdown = () => {
     startCountdown();
   };
 
-  const handleReset = () => {
+  const handleNext = () => {
+    if (isLastExercise()) {
+      // Navigate back to exercise list when finished
+      navigate("/exercises");
+      reset();
+    } else {
+      const nextEx = getNextExercise();
+      // If next is rest, auto-start it
+      if (nextEx && nextEx.isRest) {
+        startRestAutomatically();
+      } else {
+        nextExercise();
+      }
+    }
+  };
+
+  const handleBack = () => {
+    navigate("/exercises");
     reset();
   };
 
+  if (!currentExercise) {
+    return (
+      <div className="timer-view">
+        <Nav onBack={handleBack} />
+        <div className="timer-view__main">
+          <div className="timer-view__content">
+            <Headline>No exercise selected</Headline>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="timer-view">
-      <div
-        className="timer-view__progress-bar"
-        style={{ width: `${getProgress()}%` }}
-      />
+      <Nav onBack={handleBack} centerContent={<span>{stepIndicator}</span>} />
+      {state !== "countdown" && (
+        <div
+          className="timer-view__progress-bar"
+          style={{ width: `${getProgress()}%` }}
+        />
+      )}
 
-      <div className="timer-view__content">
-        <Headline>{EXERCISE_NAME}</Headline>
-        <Paragraph>{EXERCISE_DESCRIPTION}</Paragraph>
+      <div className="timer-view__main">
+        <div className="timer-view__content">
+          <Headline>{currentExercise.name}</Headline>
+          <Paragraph>{currentExercise.description}</Paragraph>
 
-        {state === "idle" && (
-          <div className="timer-view__actions">
-            <Button onClick={handleStartCountdown}>Start Countdown</Button>
-          </div>
-        )}
-
-        {state === "countdown" && (
-          <div className="timer-view__countdown">
-            <Headline>{Math.ceil(countdownRemaining / 1000)}</Headline>
-          </div>
-        )}
-
-        {state === "running" && (
-          <div className="timer-view__timer">
-            <Headline>{formatTime(timerRemaining)}</Headline>
-          </div>
-        )}
-
-        {state === "completed" && (
-          <div className="timer-view__completed">
-            <Headline>Exercise Complete!</Headline>
-            <div className="timer-view__actions">
-              <Button onClick={handleReset}>Start Over</Button>
+          {state === "countdown" && (
+            <div className="timer-view__countdown">
+              <Headline>
+                {"Get Ready"} {Math.ceil(countdownRemaining / 1000)}
+              </Headline>
             </div>
-          </div>
-        )}
+          )}
+
+          {state === "running" && (
+            <div className="timer-view__timer">
+              <Headline>{formatTime(timerRemaining)}</Headline>
+            </div>
+          )}
+
+          {state === "completed" && (
+            <div className="timer-view__completed">
+              <Headline>
+                {isLastExercise() ? "Exercise Completed" : "Set Completed"}
+              </Headline>
+            </div>
+          )}
+
+          {/* Show next set preview during rest */}
+          {state === "running" &&
+            currentExercise?.isRest &&
+            nextExerciseData &&
+            !nextExerciseData.isRest && (
+              <div className="timer-view__next-preview">
+                <div className="timer-view__next-preview-content">
+                  <h3 className="timer-view__next-preview-title">
+                    Next: {nextExerciseData.name}
+                  </h3>
+                  <p className="timer-view__next-preview-description">
+                    {nextExerciseData.description}
+                  </p>
+                </div>
+              </div>
+            )}
+        </div>
       </div>
+
+      {(state === "idle" ||
+        (state === "completed" && !nextExerciseData?.isRest)) && (
+        <div className="timer-view__actions">
+          <Button
+            onClick={state === "idle" ? handleStartCountdown : handleNext}
+          >
+            {state === "idle"
+              ? "Start Countdown"
+              : isLastExercise()
+              ? "Finish"
+              : "Next"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

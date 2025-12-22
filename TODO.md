@@ -51,11 +51,11 @@ This document outlines the iterative development plan. Each iteration produces a
 
 ## Iteration 2: Exercises
 
-**Goal**: User can see hard-coded exercises with different timer durations, names and descriptions.
+**Goal**: User can see hard-coded exercises with different timer durations, names and descriptions. Each exercise consists of sets.
 
 **Features**:
 
-- Hard-coded exercise list (e.g., 30s pushups, 60s rest, 30s pushups)
+- Hard-coded exercise list with sets (e.g., 30s pushups, 60s rest, 30s pushups)
 - Exercise list view with small cards showing:
   - Activity name and duration (top row)
   - Description (below)
@@ -63,8 +63,8 @@ This document outlines the iterative development plan. Each iteration produces a
 - Back button (top of page)
 - Navigation from exercise list to timer view
 - Step indicator (e.g., "1 of 3") on timer view
-- "Next" button after exercise completes
-- Navigate through exercises sequentially
+- "Next" button after set completes
+- Navigate through sets sequentially
 
 **Components to Build**:
 
@@ -74,27 +74,27 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Technical Tasks**:
 
-- [ ] Create hard-coded exercise data structure
-- [ ] Build ExerciseList view component
-- [ ] Build exercise card component
-- [ ] Add Nav component (basic structure)
-- [ ] Implement routing: ExerciseList → TimerView
-- [ ] Add step indicator to timer view
-- [ ] Implement "Next" button logic
-- [ ] Track current exercise index in Zustand
-- [ ] Handle last exercise (show "Finish" instead of "Next")
-- [ ] Add back button to exercise list
-- [ ] Style exercise cards (minimal, spacious)
+- [x] Create hard-coded exercise data structure
+- [x] Build ExerciseList view component
+- [x] Build exercise card component
+- [x] Add Nav component (basic structure)
+- [x] Implement routing: ExerciseList → TimerView
+- [x] Add step indicator to timer view
+- [x] Implement "Next" button logic
+- [x] Track current exercise index in Zustand
+- [x] Handle last exercise (show "Finish" instead of "Next")
+- [x] Add back button to exercise list
+- [x] Style exercise cards (minimal, spacious)
 
 **Acceptance Criteria**:
 
-- User sees list of exercises with names, durations, descriptions
+- User sees list of exercises with sets (names, durations, descriptions)
 - User can scroll through exercises
 - User can tap "Start" to begin workout
-- Timer view shows current exercise with step indicator
-- After timer completes, "Next" button appears
-- User can progress through all exercises
-- Last exercise shows "Finish" button
+- Timer view shows current set with step indicator
+- After timer completes, "Set Completed" message and "Next" button appears
+- User can progress through all sets
+- Last set shows "Finish" button
 
 ---
 
@@ -145,7 +145,7 @@ This document outlines the iterative development plan. Each iteration produces a
 **Features**:
 
 - Pause/Continue functionality during timer
-- Skip forward/backward between exercises
+- Skip forward/backward between sets
 - Backward navigation from timer to exercise list
 - Completion screen with "Awesome!" message
 - "Close" button on completion screen returns to home
@@ -173,11 +173,11 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Acceptance Criteria**:
 
-- User can pause timer during exercise
+- User can pause timer during set
 - User can continue paused timer
-- User can skip to next/previous exercise
+- User can skip to next/previous set
 - User can go back from timer to exercise list
-- Completion screen appears after last exercise
+- Completion screen appears after last set
 - User can return to home from completion screen
 - All navigation flows work smoothly
 
@@ -230,8 +230,8 @@ This document outlines the iterative development plan. Each iteration produces a
 - Delete workouts
 - Workouts persisted in localStorage
 - Workout editor/form interface
-- Add/remove exercises from workouts
-- Edit exercise details (name, duration, description)
+- Add/remove sets from exercises in workouts
+- Edit set details (name, duration, description)
 
 **Components to Build**:
 
@@ -260,8 +260,8 @@ This document outlines the iterative development plan. Each iteration produces a
 - User can delete workouts
 - Workouts are saved to localStorage
 - Workouts persist across app sessions
-- User can add/remove exercises from workouts
-- User can edit exercise details
+- User can add/remove sets from exercises in workouts
+- User can edit set details
 
 ---
 

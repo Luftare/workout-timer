@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+globs: *.ts,*.tsx,*.css,*.json,*.md
+alwaysApply: false
 ---
 
 # Coding Style Rules for Workout Timer PWA

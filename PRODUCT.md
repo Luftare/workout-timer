@@ -96,12 +96,13 @@ A PWA that provides:
   - "Continue" button (pulsating, inviting)
   - Timer and progress bar remain visible but frozen
 
-  **e) Exercise Complete State:**
+  **e) Set Complete State:**
 
   - Beep sound plays when timer finishes
-  - "Next" button (for intermediate exercises)
-  - "Finish" button (for last exercise)
-  - Can skip forward or go backward to previous exercises
+  - "Set Completed" message displayed
+  - "Next" button (for intermediate sets)
+  - "Finish" button (for last set)
+  - Can skip forward or go backward to previous sets
 
 ### 4. Completion Screen
 
@@ -148,7 +149,7 @@ A PWA that provides:
 - Structure:
   - Name
   - Description
-  - List of exercises (each with name, duration, description)
+  - List of exercises, where each exercise consists of sets (each set with name, duration, description)
 
 ## Technical Requirements
 
@@ -193,35 +194,35 @@ A PWA that provides:
 
 ## Audio Feedback
 
-- **Exercise Start**: High-pitch beep once when countdown begins
-- **Exercise End**: Beep sound when timer completes
+- **Set Start**: High-pitch beep once when countdown begins
+- **Set End**: Beep sound when timer completes
 - Implementation: Web Audio API
 
 ## User Interactions
 
 ### Exercise Navigation
 
-- **Forward**: "Next" button after exercise completes
-- **Backward**: Can go back to previous exercises
-- **Skip**: Can skip exercises (forward or backward)
-- **Finish**: After last exercise, shows "Finish" button
+- **Forward**: "Next" button after set completes
+- **Backward**: Can go back to previous sets
+- **Skip**: Can skip sets (forward or backward)
+- **Finish**: After last set, shows "Finish" button
 
 ### Timer Controls
 
 - **Start**: Begin countdown (3 seconds)
-- **Pause**: Pause timer during exercise
+- **Pause**: Pause timer during set
 - **Continue**: Resume paused timer
-- **Next/Finish**: Move to next exercise or complete workout
+- **Next/Finish**: Move to next set or complete workout
 
 ## Edge Cases
 
 - Background state: Timer continues (or pauses based on implementation)
-- Last exercise: Shows "Finish" instead of "Next"
-- First exercise: Can still go backward (returns to exercise list or stays on first)
+- Last set: Shows "Finish" instead of "Next"
+- First set: Can still go backward (returns to exercise list or stays on first)
 
 ## Success Metrics
 
 - Smooth, uninterrupted workout flow
 - Clear visual and audio feedback
 - No need to manually stop beeping
-- Easy navigation between exercises
+- Easy navigation between sets

@@ -18,7 +18,7 @@ export const DEFAULT_SETS: Set[] = [
     id: "2",
     name: "Rest",
     durationSeconds: 6,
-    description: "Take a break and prepare for the next exercise.",
+    description: "Take a break and prepare for the next set.",
     isRest: true,
   },
   {

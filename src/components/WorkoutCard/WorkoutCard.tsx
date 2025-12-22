@@ -1,5 +1,6 @@
 import "./WorkoutCard.css";
 import { Workout } from "../../data/workouts";
+import { Button } from "../Button/Button";
 
 interface WorkoutCardProps {
   workout: Workout;
@@ -14,9 +15,7 @@ export const WorkoutCard = ({ workout, onSelect }: WorkoutCardProps) => {
         <p className="workout-card__description">{workout.description}</p>
       </div>
       <div className="workout-card__actions">
-        <button className="workout-card__select-button" onClick={onSelect}>
-          Select
-        </button>
+        <Button onClick={onSelect}>Select</Button>
       </div>
     </div>
   );

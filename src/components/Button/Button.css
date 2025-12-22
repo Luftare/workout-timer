@@ -5,7 +5,7 @@
   padding: var(--spacing-md) var(--spacing-xl);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  border-radius: 0.5rem;
+  border-radius: 99rem;
   cursor: pointer;
   transition: background-color var(--animation-duration-fast) ease;
   min-width: 200px;

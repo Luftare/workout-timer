@@ -1,5 +1,5 @@
 .workout-card {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
   background-color: transparent;
   border: 1px solid rgba(50, 205, 50, 0.3);
@@ -54,4 +54,3 @@
 .workout-card__select-button:hover {
   background-color: var(--color-primary-dark);
 }
-

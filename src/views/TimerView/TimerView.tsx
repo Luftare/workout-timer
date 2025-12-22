@@ -45,13 +45,16 @@ export const TimerView = () => {
   const isCurrentSetRest = currentSet?.isRest === true;
   const isNextSetNotRest = nextSetData !== null && !nextSetData.isRest;
   const shouldShowProgressBar = !isCountdownState && isTimedSet;
+  const completedLastSet = isLastSet() && isCompletedState;
 
   // Format time in MM:SS format
   const formatTime = (ms: number): string => {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   // Calculate progress percentage (0-100)
@@ -283,17 +286,27 @@ export const TimerView = () => {
   if (isTimedSet) {
     if (isRunningState) {
       timingMessage = formatTime(timerRemaining);
-    } else if (isCountdownState) {
-      timingMessage = `${Math.ceil(countdownRemaining / 1000)}`;
     } else {
       // Show set duration in 01:20 format
-      timingMessage = `${Math.floor(currentSet.durationSeconds / 60)
-        .toString()
-        .padStart(2, "0")}:${(currentSet.durationSeconds % 60)
-        .toString()
-        .padStart(2, "0")}`;
+      timingMessage = formatTime(currentSet.durationSeconds * 1000);
     }
   }
+
+  const exerciseContent = (
+    <>
+      <Headline>
+        {currentSet.name} {timingMessage}
+      </Headline>
+      <Paragraph>{currentSet.description}</Paragraph>
+    </>
+  );
+
+  const exerciseCompletedContent = (
+    <>
+      <Headline>Exercise Completed</Headline>
+      <Paragraph>Well done!</Paragraph>
+    </>
+  );
 
   return (
     <div className="timer-view">
@@ -307,10 +320,7 @@ export const TimerView = () => {
 
       <div className="timer-view__main">
         <div className="timer-view__content">
-          <Headline>
-            {currentSet.name} {timingMessage}
-          </Headline>
-          <Paragraph>{currentSet.description}</Paragraph>
+          {completedLastSet ? exerciseCompletedContent : exerciseContent}
 
           {/* Show next set preview during rest */}
           {shouldShowNextPreview && (
@@ -332,6 +342,17 @@ export const TimerView = () => {
       {shouldShowButton && (
         <div className="timer-view__actions">
           <Button onClick={getButtonOnClick()}>{getButtonText()}</Button>
+        </div>
+      )}
+
+      {/* Countdown overlay modal */}
+      {isCountdownState && isTimedSet && (
+        <div className="timer-view__countdown-overlay">
+          <div className="timer-view__countdown-content">
+            <div className="timer-view__countdown-number">
+              {Math.ceil(countdownRemaining / 1000)}
+            </div>
+          </div>
         </div>
       )}
     </div>

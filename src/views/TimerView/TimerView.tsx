@@ -199,7 +199,7 @@ export const TimerView = () => {
   const handleDone = () => {
     const isLast = isLastSet();
     if (isLast) {
-      navigate("/workout-detail");
+      navigate("/");
       reset();
       return;
     }
@@ -218,7 +218,7 @@ export const TimerView = () => {
   const handleNext = () => {
     const isLast = isLastSet();
     if (isLast) {
-      navigate("/workout-detail");
+      navigate("/");
       reset();
       return;
     }

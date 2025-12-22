@@ -9,6 +9,37 @@ export interface Workout {
 
 export const DEFAULT_WORKOUTS: Workout[] = [
   {
+    id: "debug",
+    name: "Debug Workout",
+    description: "Quick 2-set workout for testing (2 seconds each)",
+    sets: [
+      {
+        id: "1",
+        name: "Set 1",
+        durationSeconds: 2,
+        description: "First test set.",
+        isRest: false,
+        isTimed: true,
+      },
+      {
+        id: "2",
+        name: "Rest",
+        durationSeconds: 2,
+        description: "Take a break and prepare for the next set.",
+        isRest: true,
+        isTimed: true,
+      },
+      {
+        id: "3",
+        name: "Set 2",
+        durationSeconds: 2,
+        description: "Second test set.",
+        isRest: false,
+        isTimed: true,
+      },
+    ],
+  },
+  {
     id: "1",
     name: "Morning Pushups",
     description: "A quick pushup routine to start your day",
@@ -142,4 +173,3 @@ export const DEFAULT_WORKOUTS: Workout[] = [
     ],
   },
 ];
-

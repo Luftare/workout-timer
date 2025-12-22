@@ -147,7 +147,7 @@ This document outlines the iterative development plan. Each iteration produces a
 - [x] Create manifest.json
 - [x] Add service worker
 - [x] Configure PWA settings
-- [ ] Test installation on mobile devices
+- [x] Test installation on mobile devices
 - [x] Ensure full-screen experience
 - [x] Add app icons
 
@@ -165,12 +165,12 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Technical Tasks**:
 
-- [ ] Implement Web Audio API beep function, initiate the audio engine upon selecting a workout
-- [ ] Add high-pitch beep (150ms) when countdown starts
-- [ ] Add lower and a bit longer (500ms) beep when timer completes
-- [ ] Integrate confetti library
-- [ ] Confetti animation on completion screen
-- [ ] Ensure audio works on mobile devices
+- [x] Implement Web Audio API beep function, initiate the audio engine upon selecting a workout
+- [x] Add high-pitch beep (150ms) when countdown starts
+- [x] Add lower and a bit longer (500ms) beep when timer completes
+- [x] Integrate confetti library
+- [x] Confetti animation on completion screen
+- [x] Ensure audio works on mobile devices
 - [ ] Test audio volume and pitch
 
 **Acceptance Criteria**:

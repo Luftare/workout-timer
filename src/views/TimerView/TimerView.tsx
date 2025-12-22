@@ -9,6 +9,8 @@ import {
   COUNTDOWN_DURATION_MS,
   TIMER_UPDATE_INTERVAL_MS,
 } from "../../constants/constants";
+import { audioEngine } from "../../utils/audio";
+import confetti from "canvas-confetti";
 import "./TimerView.css";
 
 export const TimerView = () => {
@@ -33,6 +35,8 @@ export const TimerView = () => {
 
   const countdownIntervalRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<number | null>(null);
+  const countdownBeepPlayedRef = useRef<boolean>(false);
+  const confettiTriggeredRef = useRef<boolean>(false);
 
   // Boolean flags
   const isNonTimedSet = currentSet !== null && !currentSet.isTimed;
@@ -97,6 +101,11 @@ export const TimerView = () => {
             clearInterval(countdownIntervalRef.current);
             countdownIntervalRef.current = null;
           }
+          // Play beep when countdown finishes (timer starts)
+          if (!countdownBeepPlayedRef.current) {
+            audioEngine.playHighPitchBeep();
+            countdownBeepPlayedRef.current = true;
+          }
           useTimerStore.getState().startTimer();
         }
       }, TIMER_UPDATE_INTERVAL_MS);
@@ -105,6 +114,8 @@ export const TimerView = () => {
         clearInterval(countdownIntervalRef.current);
         countdownIntervalRef.current = null;
       }
+      // Reset beep flag when countdown ends
+      countdownBeepPlayedRef.current = false;
     }
 
     return () => {
@@ -139,6 +150,9 @@ export const TimerView = () => {
             clearInterval(timerIntervalRef.current);
             timerIntervalRef.current = null;
           }
+          // Play beep when timer completes
+          audioEngine.playLowPitchBeep();
+
           const store = useTimerStore.getState();
           const currentSetData = store.getCurrentSet();
           const nextSetData = store.getNextSet();
@@ -312,6 +326,51 @@ export const TimerView = () => {
       <Paragraph>Well done!</Paragraph>
     </>
   );
+
+  // Trigger confetti when workout is completed
+  useEffect(() => {
+    if (completedLastSet && !confettiTriggeredRef.current) {
+      confettiTriggeredRef.current = true;
+
+      const duration = 3000;
+      const animationEnd = Date.now() + duration;
+      const defaults = {
+        startVelocity: 30,
+        spread: 360,
+        ticks: 60,
+        zIndex: 2000,
+      };
+
+      function randomInRange(min: number, max: number) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        });
+      }, 250);
+    }
+
+    // Reset confetti trigger when not completed
+    if (!completedLastSet) {
+      confettiTriggeredRef.current = false;
+    }
+  }, [completedLastSet]);
 
   return (
     <div className="timer-view">

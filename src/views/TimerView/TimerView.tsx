@@ -158,6 +158,8 @@ export const TimerView = () => {
           const store = useTimerStore.getState();
           const currentSetData = store.getCurrentSet();
           const nextSetData = store.getNextSet();
+          const currentIndex = store.currentSetIndex;
+          const allSets = store.sets;
 
           const hasCurrentSet = currentSetData !== null;
           const hasNextSet = nextSetData !== null;
@@ -165,15 +167,32 @@ export const TimerView = () => {
           const isNextSetRest = nextSetData?.isRest === true;
           const isNextSetNotRest = nextSetData !== null && !nextSetData.isRest;
 
+          // Check if current set is part of a multi-set sequence
+          const sequence = currentSetData
+            ? findSetSequence(allSets, currentIndex)
+            : null;
+          const isLastInSequence =
+            sequence === null ||
+            currentIndex === sequence.indices[sequence.indices.length - 1];
+
           const shouldMoveToNextSet =
             hasCurrentSet && isCurrentSetRest && hasNextSet && isNextSetNotRest;
           const shouldAutoStartRest =
             hasCurrentSet && !isCurrentSetRest && hasNextSet && isNextSetRest;
+          const shouldAutoAdvanceInSequence =
+            hasCurrentSet &&
+            !isCurrentSetRest &&
+            sequence !== null &&
+            !isLastInSequence &&
+            hasNextSet;
 
           if (shouldMoveToNextSet) {
             store.nextSet();
           } else if (shouldAutoStartRest) {
             store.startRestAutomatically();
+          } else if (shouldAutoAdvanceInSequence) {
+            // Auto-advance to next set in multi-set sequence
+            store.nextSet();
           } else {
             useTimerStore.setState({ state: "completed" });
           }
@@ -274,7 +293,25 @@ export const TimerView = () => {
     }
     const isLast = isLastSet();
     const hasNextNotRest = isNextSetNotRest;
-    return isLast || hasNextNotRest;
+
+    // Check if current set is part of a multi-set sequence
+    const sequence = currentSet ? findSetSequence(sets, currentSetIndex) : null;
+    const isLastInSequence =
+      sequence === null ||
+      currentSetIndex === sequence.indices[sequence.indices.length - 1];
+
+    // Only show button if it's the last set overall, or last in sequence, or next set is not part of sequence
+    if (isLast) {
+      return true;
+    }
+
+    // If part of sequence, only show button if it's the last in the sequence
+    if (sequence !== null) {
+      return isLastInSequence;
+    }
+
+    // If not part of sequence, show button if next set exists and is not rest
+    return hasNextNotRest;
   };
 
   const shouldShowButton =

@@ -196,8 +196,8 @@ This document outlines the iterative development plan. Each iteration produces a
 
 **Technical Tasks**:
 
-- [ ] Implement logic to identify a sequence of sets that have the same name
-- [ ] Build visual representation of the sequence
+- [x] Implement logic to identify a sequence of sets that have the same name
+- [x] Build visual representation of the sequence
 
 **Acceptance Criteria**:
 

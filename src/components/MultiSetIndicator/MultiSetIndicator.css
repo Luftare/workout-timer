@@ -1,0 +1,36 @@
+.multi-set-indicator {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  background-color: rgba(50, 205, 50, 0.1);
+  border: 1px solid rgba(50, 205, 50, 0.3);
+  border-radius: 999px;
+  margin: var(--spacing-md) 0;
+}
+
+.multi-set-indicator__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(50, 205, 50, 0.4);
+  transition: all var(--animation-duration-fast) ease;
+}
+
+.multi-set-indicator__dot--active {
+  background-color: var(--color-accent);
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 8px rgba(50, 205, 50, 0.6);
+}
+
+.multi-set-indicator__dot--completed {
+  background-color: var(--color-accent);
+  opacity: 0.6;
+}
+
+.multi-set-indicator__dot--upcoming {
+  background-color: rgba(50, 205, 50, 0.3);
+}

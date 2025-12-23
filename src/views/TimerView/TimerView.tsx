@@ -5,11 +5,13 @@ import { Button } from "../../components/Button/Button";
 import { Headline } from "../../components/Headline/Headline";
 import { Paragraph } from "../../components/Paragraph/Paragraph";
 import { Nav } from "../../components/Nav/Nav";
+import { MultiSetIndicator } from "../../components/MultiSetIndicator/MultiSetIndicator";
 import {
   COUNTDOWN_DURATION_MS,
   TIMER_UPDATE_INTERVAL_MS,
 } from "../../constants/constants";
 import { audioEngine } from "../../utils/audio";
+import { findSetSequence } from "../../utils/setSequence";
 import confetti from "canvas-confetti";
 import "./TimerView.css";
 
@@ -311,12 +313,24 @@ export const TimerView = () => {
     }
   }
 
+  // Find set sequence for multi-set indicator
+  const setSequence = currentSet
+    ? findSetSequence(sets, currentSetIndex)
+    : null;
+
   const workoutContent = (
     <>
       <Headline>
         {currentSet.name} {timingMessage}
       </Headline>
       <Paragraph>{currentSet.description}</Paragraph>
+      {setSequence && (
+        <MultiSetIndicator
+          totalSets={sets.length}
+          currentIndex={currentSetIndex}
+          sequenceIndices={setSequence.indices}
+        />
+      )}
     </>
   );
 

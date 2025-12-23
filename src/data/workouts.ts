@@ -1,4 +1,11 @@
-import { Set } from "./sets";
+export interface Set {
+  id: string;
+  name: string;
+  durationSeconds: number;
+  description: string;
+  isRest: boolean;
+  isTimed: boolean;
+}
 
 export interface Workout {
   id: string;

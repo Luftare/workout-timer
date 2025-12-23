@@ -182,6 +182,31 @@ This document outlines the iterative development plan. Each iteration produces a
 
 ---
 
+## Iteration 5.1: Workout visual feedback
+
+**Goal**: See multi-set visual indicator
+
+**Features**:
+
+- Conditonally shown capsule indicator for sets that follow each other with the same name
+
+**Components to Build**:
+
+- MultiSetIndicator
+
+**Technical Tasks**:
+
+- [ ] Implement logic to identify a sequence of sets that have the same name
+- [ ] Build visual representation of the sequence
+
+**Acceptance Criteria**:
+
+- Given consecutive sets with same name, user sees the progress of those sets
+- If the current set doesn't have adjacent sets with same name, no indicator is shown
+- When in sequential sets with same name, user sees dots inside a horizontal capsule with the current set of the group highlighted
+
+---
+
 ## Iteration 6: Workout Management
 
 **Goal**: Create and edit workouts, persist in localStorage.

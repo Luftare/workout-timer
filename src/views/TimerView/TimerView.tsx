@@ -331,7 +331,7 @@ export const TimerView = () => {
   const getButtonText = () => {
     if (isNonTimedSet) {
       const isLast = isLastSet();
-      return isLast ? "Finish" : "Done";
+      return isLast ? "Finish" : "Next";
     }
     if (isIdleState) {
       return "Start Countdown";

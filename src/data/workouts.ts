@@ -30,6 +30,14 @@ export const DEFAULT_WORKOUTS: Workout[] = [
         isTimed: true,
       },
       {
+        id: "0",
+        name: "Pushups",
+        durationSeconds: 2,
+        description: "Do pushups until failure.",
+        isRest: false,
+        isTimed: false,
+      },
+      {
         id: "1.2",
         name: "Pushups",
         durationSeconds: 2,
@@ -37,6 +45,7 @@ export const DEFAULT_WORKOUTS: Workout[] = [
         isRest: false,
         isTimed: true,
       },
+
       {
         id: "2",
         name: "Rest",

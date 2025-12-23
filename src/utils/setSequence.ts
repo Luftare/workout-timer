@@ -1,4 +1,4 @@
-import { Set } from "../data/sets";
+import { Set } from "../data/workouts";
 
 export interface SetSequence {
   startIndex: number;
@@ -20,7 +20,7 @@ export function findSetSequence(
   }
 
   const currentSet = sets[currentIndex];
-  
+
   // Don't show indicator for rest sets
   if (currentSet.isRest) {
     return null;
@@ -82,4 +82,3 @@ export function findSetSequence(
     indices,
   };
 }
-

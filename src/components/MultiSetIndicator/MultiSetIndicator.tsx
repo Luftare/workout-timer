@@ -7,7 +7,6 @@ interface MultiSetIndicatorProps {
 }
 
 export const MultiSetIndicator = ({
-  totalSets,
   currentIndex,
   sequenceIndices,
 }: MultiSetIndicatorProps) => {
@@ -28,4 +27,3 @@ export const MultiSetIndicator = ({
     </div>
   );
 };
-

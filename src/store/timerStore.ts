@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { COUNTDOWN_DURATION_MS } from "../constants/constants";
-import { Set } from "../data/sets";
+import { Set } from "../data/workouts";
 import { Workout } from "../data/workouts";
 
 type TimerState = "idle" | "countdown" | "running" | "paused" | "completed";

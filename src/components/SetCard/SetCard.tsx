@@ -1,5 +1,5 @@
 import "./SetCard.css";
-import { Set } from "../../data/sets";
+import { Set } from "../../data/workouts";
 
 interface SetCardProps {
   set: Set;

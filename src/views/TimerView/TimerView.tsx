@@ -9,6 +9,7 @@ import { MultiSetIndicator } from "../../components/MultiSetIndicator/MultiSetIn
 import {
   COUNTDOWN_DURATION_MS,
   TIMER_UPDATE_INTERVAL_MS,
+  NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS,
 } from "../../constants/constants";
 import { audioEngine } from "../../utils/audio";
 import { wakeLockManager } from "../../utils/wakeLock";
@@ -390,7 +391,10 @@ export const TimerView = () => {
 
     // Re-request wake lock if it was released (e.g., when user switches tabs)
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && !wakeLockManager.isActive()) {
+      if (
+        document.visibilityState === "visible" &&
+        !wakeLockManager.isActive()
+      ) {
         wakeLockManager.request();
       }
     };
@@ -486,7 +490,16 @@ export const TimerView = () => {
       {/* Show button for non-timed sets or timed sets in idle/completed state */}
       {shouldShowButton && (
         <div className="timer-view__actions">
-          <Button onClick={getButtonOnClick()}>{getButtonText()}</Button>
+          <Button
+            onClick={getButtonOnClick()}
+            disableDurationMs={
+              isNonTimedSetInIdle
+                ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS
+                : undefined
+            }
+          >
+            {getButtonText()}
+          </Button>
         </div>
       )}
 

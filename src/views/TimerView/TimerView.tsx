@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTimerStore } from "../../store/timerStore";
 import { Button } from "../../components/Button/Button";
@@ -41,6 +41,12 @@ export const TimerView = () => {
   const timerIntervalRef = useRef<number | null>(null);
   const countdownBeepPlayedRef = useRef<boolean>(false);
   const confettiTriggeredRef = useRef<boolean>(false);
+  const previousSetIndexRef = useRef<number>(currentSetIndex);
+
+  // State to manage disableDurationMs with reset on set change
+  const [buttonDisableDurationMs, setButtonDisableDurationMs] = useState<
+    number | undefined
+  >(undefined);
 
   // Boolean flags
   const isNonTimedSet = currentSet !== null && !currentSet.isTimed;
@@ -278,6 +284,30 @@ export const TimerView = () => {
     }
   }, [currentSet, navigate]);
 
+  // Reset disableDurationMs when set changes to trigger hook re-run
+  useEffect(() => {
+    const setIndexChanged = previousSetIndexRef.current !== currentSetIndex;
+    if (setIndexChanged) {
+      previousSetIndexRef.current = currentSetIndex;
+      // Reset to 0 first to trigger the hook
+      setButtonDisableDurationMs(0);
+      // Then set to actual value in next tick
+      const timeoutId = setTimeout(() => {
+        const shouldDisable = isNonTimedSet && isIdleState;
+        setButtonDisableDurationMs(
+          shouldDisable ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS : undefined
+        );
+      }, 0);
+      return () => clearTimeout(timeoutId);
+    } else {
+      // Update value if set hasn't changed but conditions might have
+      const shouldDisable = isNonTimedSet && isIdleState;
+      setButtonDisableDurationMs(
+        shouldDisable ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS : undefined
+      );
+    }
+  }, [currentSetIndex, isNonTimedSet, isIdleState]);
+
   // Don't render if no set (redirect will happen)
   if (!currentSet) {
     return null;
@@ -289,7 +319,6 @@ export const TimerView = () => {
     isCurrentSetRest &&
     nextSetData !== null &&
     isNextSetNotRest;
-  const isNonTimedSetInIdle = isNonTimedSet && isIdleState;
 
   // Functions for button behavior
   const getButtonOnClick = () => {
@@ -473,11 +502,7 @@ export const TimerView = () => {
         <Button
           onClick={getButtonOnClick()}
           disabled={getButtonDisabled()}
-          disableDurationMs={
-            isNonTimedSetInIdle
-              ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS
-              : undefined
-          }
+          disableDurationMs={buttonDisableDurationMs}
         >
           {getButtonText()}
         </Button>

@@ -1,6 +1,7 @@
 .set-card {
-  padding: var(--spacing-md) 0;
-  background-color: transparent;
+  padding: var(--spacing-sm);
+  background-color: var(--color-gray-darker);
+  border-radius: 0.5rem;
 }
 
 .set-card__header {

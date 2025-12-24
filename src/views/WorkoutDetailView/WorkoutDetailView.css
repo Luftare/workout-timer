@@ -16,6 +16,9 @@
 .workout-detail__sets {
   flex: 1;
   margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-xs);
+  display: flex;
+  flex-direction: column;
 }
 
 .workout-detail__actions {

@@ -3,17 +3,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
   background-color: var(--color-gray-darker);
-  border: 1px solid var(--color-gray-dark);
   border-radius: 999px;
   margin: var(--spacing-md) 0;
 }
 
 .multi-set-indicator__dot {
-  width: 8px;
-  height: 8px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background-color: var(--color-gray-dark);
   transition: all var(--animation-duration-fast) ease;
@@ -21,8 +20,8 @@
 
 .multi-set-indicator__dot--active {
   background-color: var(--color-white);
-  width: 10px;
-  height: 10px;
+  width: 16px;
+  height: 16px;
 }
 
 .multi-set-indicator__dot--completed {

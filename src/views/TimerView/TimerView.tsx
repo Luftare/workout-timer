@@ -291,37 +291,6 @@ export const TimerView = () => {
     nextSetData !== null &&
     isNextSetNotRest;
   const isNonTimedSetInIdle = isNonTimedSet && isIdleState;
-  const isTimedSetInIdle = isTimedSet && isIdleState;
-
-  const shouldShowCompletedButton = () => {
-    if (!isTimedSet || !isCompletedState) {
-      return false;
-    }
-    const isLast = isLastSet();
-    const hasNextNotRest = isNextSetNotRest;
-
-    // Check if current set is part of a multi-set sequence
-    const sequence = currentSet ? findSetSequence(sets, currentSetIndex) : null;
-    const isLastInSequence =
-      sequence === null ||
-      currentSetIndex === sequence.indices[sequence.indices.length - 1];
-
-    // Only show button if it's the last set overall, or last in sequence, or next set is not part of sequence
-    if (isLast) {
-      return true;
-    }
-
-    // If part of sequence, only show button if it's the last in the sequence
-    if (sequence !== null) {
-      return isLastInSequence;
-    }
-
-    // If not part of sequence, show button if next set exists and is not rest
-    return hasNextNotRest;
-  };
-
-  const shouldShowButton =
-    isNonTimedSetInIdle || isTimedSetInIdle || shouldShowCompletedButton();
 
   // Functions for button behavior
   const getButtonOnClick = () => {
@@ -344,6 +313,19 @@ export const TimerView = () => {
     }
     const isLast = isLastSet();
     return isLast ? "Finish" : "Next";
+  };
+
+  const getButtonDisabled = (): boolean => {
+    // Disable during countdown
+    if (isCountdownState) {
+      return true;
+    }
+    // Disable during running timed set
+    if (isRunningState && isTimedSet) {
+      return true;
+    }
+    // Button is enabled in all other states (idle, completed, paused, non-timed sets)
+    return false;
   };
 
   let timingMessage = "";
@@ -487,21 +469,20 @@ export const TimerView = () => {
         </div>
       </div>
 
-      {/* Show button for non-timed sets or timed sets in idle/completed state */}
-      {shouldShowButton && (
-        <div className="timer-view__actions">
-          <Button
-            onClick={getButtonOnClick()}
-            disableDurationMs={
-              isNonTimedSetInIdle
-                ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS
-                : undefined
-            }
-          >
-            {getButtonText()}
-          </Button>
-        </div>
-      )}
+      {/* Always show button to prevent layout jumps */}
+      <div className="timer-view__actions">
+        <Button
+          onClick={getButtonOnClick()}
+          disabled={getButtonDisabled()}
+          disableDurationMs={
+            isNonTimedSetInIdle
+              ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS
+              : undefined
+          }
+        >
+          {getButtonText()}
+        </Button>
+      </div>
 
       {/* Countdown overlay modal */}
       {isCountdownState && isTimedSet && (

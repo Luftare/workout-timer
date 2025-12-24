@@ -33,6 +33,6 @@
 }
 
 .button:disabled {
-  filter: grayscale(100%);
+  background-color: var(--color-gray-dark);
   cursor: not-allowed;
 }

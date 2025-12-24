@@ -271,17 +271,16 @@ export const TimerView = () => {
     reset();
   };
 
+  // Redirect to home if no set is selected
+  useEffect(() => {
+    if (!currentSet) {
+      navigate("/", { replace: true });
+    }
+  }, [currentSet, navigate]);
+
+  // Don't render if no set (redirect will happen)
   if (!currentSet) {
-    return (
-      <div className="timer-view">
-        <Nav onBack={handleBack} onExit={handleExit} />
-        <div className="timer-view__main">
-          <div className="timer-view__content">
-            <Headline>No set selected</Headline>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Boolean flags for UI rendering

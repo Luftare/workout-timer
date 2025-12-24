@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTimerStore } from "../../store/timerStore";
 import { Nav } from "../../components/Nav/Nav";
@@ -11,6 +12,13 @@ export const WorkoutDetailView = () => {
   const navigate = useNavigate();
   const selectedWorkout = useTimerStore((state) => state.selectedWorkout);
   const setSets = useTimerStore((state) => state.setSets);
+
+  // Redirect to home if no workout is selected
+  useEffect(() => {
+    if (!selectedWorkout) {
+      navigate("/", { replace: true });
+    }
+  }, [selectedWorkout, navigate]);
 
   const handleStart = async () => {
     if (selectedWorkout) {
@@ -29,15 +37,9 @@ export const WorkoutDetailView = () => {
     navigate("/");
   };
 
+  // Don't render if no workout (redirect will happen)
   if (!selectedWorkout) {
-    return (
-      <div className="workout-detail">
-        <Nav onExit={handleExit} />
-        <div className="workout-detail__content">
-          <p>No workout selected. Please select a workout from the home screen.</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -56,4 +58,3 @@ export const WorkoutDetailView = () => {
     </div>
   );
 };
-

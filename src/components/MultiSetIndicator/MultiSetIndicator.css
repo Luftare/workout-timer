@@ -20,10 +20,9 @@
 }
 
 .multi-set-indicator__dot--active {
-  background-color: var(--color-accent);
+  background-color: var(--color-white);
   width: 10px;
   height: 10px;
-  box-shadow: 0 0 8px rgba(50, 205, 50, 0.6);
 }
 
 .multi-set-indicator__dot--completed {

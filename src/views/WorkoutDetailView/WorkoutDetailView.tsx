@@ -4,6 +4,7 @@ import { Nav } from "../../components/Nav/Nav";
 import { SetCard } from "../../components/SetCard/SetCard";
 import { Button } from "../../components/Button/Button";
 import { audioEngine } from "../../utils/audio";
+import { wakeLockManager } from "../../utils/wakeLock";
 import "./WorkoutDetailView.css";
 
 export const WorkoutDetailView = () => {
@@ -14,6 +15,7 @@ export const WorkoutDetailView = () => {
   const handleStart = async () => {
     if (selectedWorkout) {
       await audioEngine.initialize();
+      await wakeLockManager.request();
       setSets(selectedWorkout.sets);
       navigate("/timer");
     }

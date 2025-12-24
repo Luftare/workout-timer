@@ -182,3 +182,5 @@ Create these reusable components with proper props:
 - [ ] State managed with Zustand
 - [ ] HOCs used for state when appropriate
 - [ ] Descriptive variable and function names
+- [ ] Composable pure functions when possible
+- [ ] Focused classes, modules, components, and functions: split early to avoid god-classes or mega-components

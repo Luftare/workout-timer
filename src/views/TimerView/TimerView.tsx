@@ -11,6 +11,7 @@ import {
   TIMER_UPDATE_INTERVAL_MS,
 } from "../../constants/constants";
 import { audioEngine } from "../../utils/audio";
+import { wakeLockManager } from "../../utils/wakeLock";
 import { findSetSequence } from "../../utils/setSequence";
 import confetti from "canvas-confetti";
 import "./TimerView.css";
@@ -220,6 +221,7 @@ export const TimerView = () => {
   const handleDone = () => {
     const isLast = isLastSet();
     if (isLast) {
+      wakeLockManager.release();
       navigate("/");
       reset();
       return;
@@ -239,6 +241,7 @@ export const TimerView = () => {
   const handleNext = () => {
     const isLast = isLastSet();
     if (isLast) {
+      wakeLockManager.release();
       navigate("/");
       reset();
       return;
@@ -256,11 +259,13 @@ export const TimerView = () => {
   };
 
   const handleBack = () => {
+    wakeLockManager.release();
     navigate("/workout-detail");
     reset();
   };
 
   const handleExit = () => {
+    wakeLockManager.release();
     navigate("/");
     reset();
   };
@@ -377,6 +382,27 @@ export const TimerView = () => {
       <Paragraph>Well done!</Paragraph>
     </>
   );
+
+  // Manage wake lock
+  useEffect(() => {
+    // Ensure wake lock is active when timer view is mounted
+    wakeLockManager.request();
+
+    // Re-request wake lock if it was released (e.g., when user switches tabs)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && !wakeLockManager.isActive()) {
+        wakeLockManager.request();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Cleanup: release wake lock when component unmounts
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      wakeLockManager.release();
+    };
+  }, []);
 
   // Trigger confetti when workout is completed
   useEffect(() => {

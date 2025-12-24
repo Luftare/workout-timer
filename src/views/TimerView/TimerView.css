@@ -62,9 +62,9 @@
 .timer-view__next-preview {
   margin-top: var(--spacing-xl);
   padding: var(--spacing-md);
-  border: 1px solid var(--color-accent);
+  border: 1px solid var(--color-gray-dark);
   border-radius: 0.5rem;
-  background-color: rgba(50, 205, 50, 0.1);
+  background-color: var(--color-gray-darker);
 }
 
 .timer-view__next-preview-content {

@@ -20,14 +20,14 @@ export const DEFAULT_WORKOUTS: Workout[] = [
     name: "Debug Workout",
     description: "Quick 2-set workout for testing (2 seconds each)",
     sets: [
-      {
-        id: "1",
-        name: "Pushups",
-        durationSeconds: 2,
-        description: "Do pushups until the timer runs out.",
-        isRest: false,
-        isTimed: true,
-      },
+      // {
+      //   id: "1",
+      //   name: "Pushups",
+      //   durationSeconds: 2,
+      //   description: "Do pushups until the timer runs out.",
+      //   isRest: false,
+      //   isTimed: true,
+      // },
       {
         id: "1.1",
         name: "Pushups",

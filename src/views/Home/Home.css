@@ -17,3 +17,10 @@
   flex: 1;
   width: 100%;
 }
+
+.home__version {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}

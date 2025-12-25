@@ -1,10 +1,10 @@
 import {
   BEEP_HIGH_PITCH_FREQUENCY_HZ,
-  BEEP_LOW_PITCH_FREQUENCY_HZ,
   BEEP_HIGH_PITCH_DURATION_MS,
-  BEEP_LOW_PITCH_DURATION_MS,
   BEEP_VOLUME,
 } from "../constants/constants";
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class AudioEngine {
   private audioContext: AudioContext | null = null;
@@ -73,11 +73,10 @@ class AudioEngine {
     );
   }
 
-  async playLowPitchBeep(): Promise<void> {
-    await this.playBeep(
-      BEEP_LOW_PITCH_FREQUENCY_HZ,
-      BEEP_LOW_PITCH_DURATION_MS
-    );
+  async playTwoBeeps(): Promise<void> {
+    await this.playHighPitchBeep();
+    await sleep(100);
+    await this.playHighPitchBeep();
   }
 }
 

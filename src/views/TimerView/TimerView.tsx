@@ -160,7 +160,7 @@ export const TimerView = () => {
             timerIntervalRef.current = null;
           }
           // Play beep when timer completes
-          audioEngine.playLowPitchBeep();
+          audioEngine.playTwoBeeps();
 
           const store = useTimerStore.getState();
           const currentSetData = store.getCurrentSet();

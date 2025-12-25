@@ -41,9 +41,8 @@ export const TimerView = () => {
   const timerIntervalRef = useRef<number | null>(null);
   const countdownBeepPlayedRef = useRef<boolean>(false);
   const confettiTriggeredRef = useRef<boolean>(false);
-  const previousSetIndexRef = useRef<number>(currentSetIndex);
 
-  // State to manage disableDurationMs with reset on set change
+  // State to manage disableDurationMs with random variation for Safari compatibility
   const [buttonDisableDurationMs, setButtonDisableDurationMs] = useState<
     number | undefined
   >(undefined);
@@ -284,28 +283,19 @@ export const TimerView = () => {
     }
   }, [currentSet, navigate]);
 
-  // Reset disableDurationMs when set changes to trigger hook re-run
+  // Update disableDurationMs when set or state changes
+  // Add random variation (0-10ms) to ensure prop changes are detected in Safari
   useEffect(() => {
-    const setIndexChanged = previousSetIndexRef.current !== currentSetIndex;
-    if (setIndexChanged) {
-      previousSetIndexRef.current = currentSetIndex;
-      // Reset to 0 first to trigger the hook
-      setButtonDisableDurationMs(0);
-      // Then set to actual value in next tick
-      const timeoutId = setTimeout(() => {
-        const shouldDisable = isNonTimedSet && isIdleState;
-        setButtonDisableDurationMs(
-          shouldDisable ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS : undefined
-        );
-      }, 0);
-      return () => clearTimeout(timeoutId);
-    } else {
-      // Update value if set hasn't changed but conditions might have
-      const shouldDisable = isNonTimedSet && isIdleState;
-      setButtonDisableDurationMs(
-        shouldDisable ? NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS : undefined
-      );
+    const shouldDisable = isNonTimedSet && isIdleState;
+    if (!shouldDisable) {
+      setButtonDisableDurationMs(undefined);
+      return;
     }
+    // Add small random variation to base duration to ensure Safari detects prop changes
+    const randomVariation = Math.random() * 10;
+    const disableDuration =
+      NON_TIMED_SET_BUTTON_DISABLE_DURATION_MS + randomVariation;
+    setButtonDisableDurationMs(disableDuration);
   }, [currentSetIndex, isNonTimedSet, isIdleState]);
 
   // Don't render if no set (redirect will happen)

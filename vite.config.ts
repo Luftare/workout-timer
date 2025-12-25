@@ -35,6 +35,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // More aggressive update strategy for iOS
+        skipWaiting: true,
+        clientsClaim: true,
+        // Check for updates more frequently
+        navigateFallback: '/index.html',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -51,6 +56,11 @@ export default defineConfig({
             }
           }
         ]
+      },
+      // Force update check on every app launch
+      devOptions: {
+        enabled: false,
+        type: 'module'
       }
     })
   ],

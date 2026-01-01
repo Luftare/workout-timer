@@ -50,45 +50,9 @@ export function isRest(set: Set): set is Rest {
 // Default workout data
 export const DEFAULT_WORKOUTS: Workout[] = [
   {
-    id: "debug",
-    name: "Debug Workout",
-    description: "Quick 2-set workout for testing (2 seconds each)",
-    sets: [
-      {
-        type: SET_TYPE_TIMED,
-        id: "1.1",
-        name: "Pushups",
-        durationSeconds: 2,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "0",
-        name: "Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "1.2",
-        name: "Pushups",
-        durationSeconds: 2,
-      },
-      {
-        type: SET_TYPE_REST,
-        id: "2",
-        durationSeconds: 2,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "3",
-        name: "Pull-ups",
-        durationSeconds: 2,
-      },
-    ],
-  },
-  {
-    id: "beginner-calisthenics",
-    name: "Beginner Calisthenics",
-    description: "A basic calisthenics without any equipment",
+    id: "quick-calisthenics",
+    name: "Quick Calisthenics",
+    description: "A quick calisthenics workout",
     sets: [
       {
         type: SET_TYPE_REPS,
@@ -231,6 +195,42 @@ export const DEFAULT_WORKOUTS: Workout[] = [
         id: "5",
         name: "Plank",
         durationSeconds: 60,
+      },
+    ],
+  },
+  {
+    id: "debug",
+    name: "Debug Workout",
+    description: "Not a real workout, just for debugging...",
+    sets: [
+      {
+        type: SET_TYPE_TIMED,
+        id: "1.1",
+        name: "Pushups",
+        durationSeconds: 2,
+      },
+      {
+        type: SET_TYPE_REPS,
+        id: "0",
+        name: "Pushups",
+        reps: 10,
+      },
+      {
+        type: SET_TYPE_TIMED,
+        id: "1.2",
+        name: "Pushups",
+        durationSeconds: 2,
+      },
+      {
+        type: SET_TYPE_REST,
+        id: "2",
+        durationSeconds: 2,
+      },
+      {
+        type: SET_TYPE_TIMED,
+        id: "3",
+        name: "Pull-ups",
+        durationSeconds: 2,
       },
     ],
   },

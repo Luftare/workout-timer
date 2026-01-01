@@ -28,7 +28,7 @@ export const Home = () => {
             />
           ))}
         </div>
-        <div className="home__version">v1.0.2</div>
+        <div className="home__version">v1.1.0</div>
       </div>
     </div>
   );

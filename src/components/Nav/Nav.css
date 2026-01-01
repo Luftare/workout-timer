@@ -14,7 +14,6 @@
   gap: var(--spacing-md);
 }
 
-.nav__back-button,
 .nav__exit-button {
   background: none;
   border: none;
@@ -25,7 +24,6 @@
   transition: opacity var(--animation-duration-fast) ease;
 }
 
-.nav__back-button:hover,
 .nav__exit-button:hover {
   opacity: 0.7;
 }

@@ -244,12 +244,6 @@ export const TimerView = () => {
     nextSet();
   };
 
-  const handleBack = () => {
-    wakeLockManager.release();
-    navigate("/workout-detail");
-    reset();
-  };
-
   const handleExit = () => {
     wakeLockManager.release();
     navigate("/");
@@ -438,11 +432,7 @@ export const TimerView = () => {
 
   return (
     <div className="timer-view">
-      <Nav
-        onBack={handleBack}
-        onExit={handleExit}
-        centerContent={<span>{stepIndicator}</span>}
-      />
+      <Nav onExit={handleExit} centerContent={<span>{stepIndicator}</span>} />
       {shouldShowProgressBar && (
         <div
           className="timer-view__progress-bar"

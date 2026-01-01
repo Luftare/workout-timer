@@ -66,10 +66,6 @@ export const WorkoutDetailView = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate("/");
-  };
-
   const handleExit = () => {
     navigate("/");
   };
@@ -83,7 +79,7 @@ export const WorkoutDetailView = () => {
 
   return (
     <div className="workout-detail">
-      <Nav onBack={handleBack} onExit={handleExit} />
+      <Nav onExit={handleExit} />
       <div className="workout-detail__content">
         {/* Commitment Ladder */}
         <div className="workout-detail__commitment">

@@ -129,7 +129,7 @@ Volume is applied **at runtime** via helper functions, not stored in the set dat
 /**
  * Get actual reps after applying volume multiplier
  * @param set - RepSet with base reps value
- * @param volume - Volume multiplier (0.1 to 2.0)
+ * @param volume - Volume multiplier (0.25 to 1.25 from commitment levels)
  * @returns Actual reps to perform (minimum 1)
  */
 function getActualReps(set: RepSet, volume: number): number {
@@ -139,7 +139,7 @@ function getActualReps(set: RepSet, volume: number): number {
 /**
  * Get actual duration after applying volume multiplier
  * @param set - TimedSet with base duration
- * @param volume - Volume multiplier (0.1 to 2.0)
+ * @param volume - Volume multiplier (0.25 to 1.25 from commitment levels)
  * @returns Actual duration in seconds (minimum 3)
  */
 function getActualDuration(set: TimedSet, volume: number): number {
@@ -154,14 +154,89 @@ function getActualDuration(set: TimedSet, volume: number): number {
 function getRestDuration(set: Rest): number {
   return set.durationSeconds;
 }
+
+/**
+ * Convert commitment level to volume multiplier
+ * @param level - Commitment level string
+ * @returns Volume multiplier (0.25 to 1.25)
+ */
+function getVolumeFromCommitment(level: CommitmentLevel): number {
+  return COMMITMENT_LEVELS[level].multiplier;
+}
 ```
 
 ### Volume Constraints
 
-- **Range**: 0.1 to 2.0
-- **Default**: 1.0 (no adjustment)
-- **Precision**: Display with 1 decimal place (e.g., 1.5, 0.8)
+- **Discrete Levels**: Five commitment-based levels (see Commitment Ladder below)
+- **Range**: 0.25 to 1.25 (25% to 125%)
+- **Default**: 1.0 (100% - "Standard")
 - **Storage**: Managed separately from `Workout` interface (see Volume Persistence section)
+
+### Commitment-Based Ladder
+
+The volume control uses a **Commitment-based ladder** instead of a continuous slider. This translates the underlying volume multiplier into intuitive, intention-based choices that encourage consistency and gradual progression.
+
+**Design Philosophy:**
+
+- Emphasizes showing up and completing workouts over maximizing effort
+- Discrete levels avoid rounding ambiguity
+- Beginner-safe while still nudging long-term progression
+- Changes are reflected immediately in reps and hold durations
+
+**Commitment Levels:**
+
+| Level       | Multiplier | Percentage | Description                        |
+| ----------- | ---------- | ---------- | ---------------------------------- |
+| Try it      | 0.25       | 25%        | Minimal commitment, just show up   |
+| Easy win    | 0.50       | 50%        | Reduced effort, build consistency  |
+| Comfortable | 0.75       | 75%        | Moderate effort, sustainable pace  |
+| Standard    | 1.00       | 100%       | Full workout as designed (default) |
+| Push it     | 1.25       | 125%       | Increased intensity, progression   |
+
+**Constants Definition:**
+
+```typescript
+// In constants.ts or dedicated commitment file
+export type CommitmentLevel =
+  | "try-it"
+  | "easy-win"
+  | "comfortable"
+  | "standard"
+  | "push-it";
+
+export const COMMITMENT_LEVELS: Record<
+  CommitmentLevel,
+  { label: string; multiplier: number; percentage: number }
+> = {
+  "try-it": { label: "Try it", multiplier: 0.25, percentage: 25 },
+  "easy-win": { label: "Easy win", multiplier: 0.5, percentage: 50 },
+  comfortable: { label: "Comfortable", multiplier: 0.75, percentage: 75 },
+  standard: { label: "Standard", multiplier: 1.0, percentage: 100 },
+  "push-it": { label: "Push it", multiplier: 1.25, percentage: 125 },
+};
+
+export const DEFAULT_COMMITMENT_LEVEL: CommitmentLevel = "standard";
+
+// localStorage key constants
+export const COMMITMENT_STORAGE_KEY_PREFIX = "workout-";
+export const COMMITMENT_STORAGE_KEY_SUFFIX = "-commitment";
+
+/**
+ * Get localStorage key for a workout's commitment level
+ * @param workoutId - The workout ID
+ * @returns localStorage key string
+ */
+export function getCommitmentStorageKey(workoutId: string): string {
+  return `${COMMITMENT_STORAGE_KEY_PREFIX}${workoutId}${COMMITMENT_STORAGE_KEY_SUFFIX}`;
+}
+```
+
+**Implementation:**
+
+- Label: "Workout Commitment"
+- UI: Radio buttons or button group with five discrete options
+- Location: `WorkoutDetailView` component, above the sets list
+- Immediate feedback: Sets display updated reps/durations as selection changes
 
 ---
 
@@ -242,17 +317,89 @@ Rep sets should display as: `{actualReps}x {set.name}`
 - Volume: `1.5`
 - Display: `"15x Pushups"`
 
-### Volume Control UI
+### Volume Control UI - Commitment Ladder
 
-**Location**: Workout detail view (before starting workout)
+**Location**: `WorkoutDetailView` component, displayed above the sets list
 
-**Design Options:**
+**Implementation:**
 
-1. **Slider**: Range slider from 0.1 to 2.0 with step 0.1
-2. **Input field**: Number input with min/max validation
-3. **Preset buttons**: Quick presets (0.5x, 0.75x, 1.0x, 1.25x, 1.5x, 2.0x)
+The commitment ladder is implemented as a radio button group or button group with five discrete options. Each option represents a commitment level with its associated multiplier.
 
-**Recommendation**: Slider with value display (e.g., "1.5x")
+**Component Structure:**
+
+```typescript
+// CommitmentLadder component
+interface CommitmentLadderProps {
+  selectedLevel: CommitmentLevel;
+  onLevelChange: (level: CommitmentLevel) => void;
+}
+
+type CommitmentLevel =
+  | "try-it"
+  | "easy-win"
+  | "comfortable"
+  | "standard"
+  | "push-it";
+
+const COMMITMENT_LEVELS: Record<
+  CommitmentLevel,
+  { label: string; multiplier: number }
+> = {
+  "try-it": { label: "Try it", multiplier: 0.25 },
+  "easy-win": { label: "Easy win", multiplier: 0.5 },
+  comfortable: { label: "Comfortable", multiplier: 0.75 },
+  standard: { label: "Standard", multiplier: 1.0 },
+  "push-it": { label: "Push it", multiplier: 1.25 },
+};
+```
+
+**UI Design:**
+
+- Horizontal button group or radio buttons
+- Each button shows the commitment level label
+- Selected state is clearly indicated
+- Default selection: "Standard" (1.00)
+- Changes immediately update displayed reps/durations in SetCards below
+
+**Placement in WorkoutDetailView:**
+
+```typescript
+<div className="workout-detail">
+  <Nav onBack={handleBack} onExit={handleExit} />
+  <div className="workout-detail__content">
+    {/* Commitment Ladder */}
+    <div className="workout-detail__commitment">
+      <label>Workout Commitment</label>
+      <CommitmentLadder
+        selectedLevel={commitmentLevel}
+        onLevelChange={handleCommitmentChange}
+      />
+    </div>
+
+    {/* Sets list with volume-adjusted values */}
+    <div className="workout-detail__sets">
+      {selectedWorkout.sets.map((set) => (
+        <SetCard
+          key={set.id}
+          set={set}
+          volume={getVolumeFromCommitment(commitmentLevel)}
+        />
+      ))}
+    </div>
+
+    <div className="workout-detail__actions">
+      <Button onClick={handleStart}>Start</Button>
+    </div>
+  </div>
+</div>
+```
+
+**Behavior:**
+
+- Selection persists per workout (stored in localStorage or state)
+- When user changes commitment level, all SetCards immediately reflect new reps/durations
+- Volume multiplier is passed to SetCard component for display
+- Selected commitment level is used when starting the workout
 
 ### SetCard Component Updates
 
@@ -299,6 +446,7 @@ Rep sets should display as: `{actualReps}x {set.name}`
 - [ ] Implement `getActualReps()`
 - [ ] Implement `getActualDuration()`
 - [ ] Implement `getRestDuration()`
+- [ ] Implement `getVolumeFromCommitment()` - converts commitment level to multiplier
 - [ ] Add unit tests for helper functions
 
 ### Phase 3: Store Updates
@@ -315,20 +463,39 @@ Rep sets should display as: `{actualReps}x {set.name}`
 - [ ] Update `WorkoutDetailView` to display reps correctly
 - [ ] Update `setSequence.ts` to work with new types
 
-### Phase 5: Volume UI
+### Phase 5: Commitment Ladder UI
 
-- [ ] Add volume control to `WorkoutDetailView`
-- [ ] Implement volume slider/input component
-- [ ] Persist volume per workout (localStorage or state management)
-- [ ] Display volume-adjusted values in workout preview
+- [ ] Create `CommitmentLadder` component with five discrete levels
+- [ ] Define commitment level types and constants
+- [ ] Add commitment ladder to `WorkoutDetailView` above sets list
+- [ ] Implement commitment level selection state management
+- [ ] Create helper function to convert commitment level to volume multiplier
+- [ ] Create helper function to validate commitment level strings
+- [ ] Create helper function to generate localStorage key from workout ID
+- [ ] Add localStorage key constants to constants file
+- [ ] Implement initialization logic in `WorkoutDetailView`:
+  - [ ] Check localStorage for persisted commitment level on mount
+  - [ ] Load persisted value if found
+  - [ ] Persist default ("standard") if not found
+  - [ ] Use workout ID in localStorage key format
+- [ ] Update `SetCard` to accept and use volume prop
+- [ ] Implement immediate feedback (update SetCards when commitment changes)
+- [ ] Persist commitment level changes to localStorage when user selects new level
+- [ ] Pass selected commitment level to timer store when starting workout
 
 ### Phase 6: Testing
 
-- [ ] Test volume application (0.1, 1.0, 2.0)
+- [ ] Test volume application for all commitment levels (0.25, 0.50, 0.75, 1.00, 1.25)
 - [ ] Test edge cases (minimum reps/duration constraints)
-- [ ] Test rest sets are unaffected
+- [ ] Test rest sets are unaffected by commitment level
 - [ ] Test migration of existing workouts
-- [ ] Test UI updates with volume changes
+- [ ] Test immediate UI updates when commitment level changes
+- [ ] Test commitment level persistence per workout
+- [ ] Test default commitment level (Standard/1.00)
+- [ ] Test initialization: Load persisted commitment level from localStorage
+- [ ] Test initialization: Persist default when no value exists
+- [ ] Test initialization: Handle invalid/corrupted localStorage values
+- [ ] Test initialization: Use correct localStorage key format with workout ID
 
 ---
 
@@ -352,16 +519,84 @@ Rep sets should display as: `{actualReps}x {set.name}`
 
 ### Volume Persistence
 
-Volume is managed separately from the `Workout` interface to allow flexibility in implementation:
+Commitment level (and its associated volume multiplier) is managed separately from the `Workout` interface to allow flexibility in implementation:
 
 **Options:**
 
-1. **Per workout in localStorage**: `workout-{id}-volume` (allows different volume per workout)
-2. **Global user preference**: Single volume for all workouts (stored as `global-volume`)
-3. **Session-only**: Reset to 1.0 on page reload (no persistence)
+1. **Per workout in localStorage**: `workout-{id}-commitment` (allows different commitment per workout)
+2. **Global user preference**: Single commitment level for all workouts (stored as `global-commitment`)
+3. **Session-only**: Reset to "standard" on page reload (no persistence)
 4. **Hybrid**: Global default with per-workout overrides
 
-**Implementation**: Volume should be retrieved from storage/state when needed and passed to helper functions. The volume value is not part of the workout data structure.
+**Implementation**:
+
+- Commitment level should be retrieved from storage/state when needed
+- Convert commitment level to volume multiplier using `getVolumeFromCommitment()`
+- Pass volume multiplier to helper functions
+- Default commitment level: "standard" (1.00 multiplier)
+- The commitment level is not part of the workout data structure
+
+### Commitment Level Initialization
+
+When `WorkoutDetailView` loads, it initializes the commitment level from localStorage:
+
+**Initialization Flow:**
+
+1. **On component mount** (when workout is selected):
+   - Construct localStorage key: `workout-{workoutId}-commitment`
+   - Check if a persisted commitment level exists in localStorage for this workout
+   - If found: Load the persisted value into component state
+   - If not found:
+     - Set default commitment level ("standard") in component state
+     - Persist the default value to localStorage with the workout-specific key
+
+**Implementation Details:**
+
+```typescript
+// In WorkoutDetailView component
+useEffect(() => {
+  if (!selectedWorkout) return;
+
+  const storageKey = getCommitmentStorageKey(selectedWorkout.id);
+  const persistedLevel = localStorage.getItem(storageKey);
+
+  if (persistedLevel && isValidCommitmentLevel(persistedLevel)) {
+    // Load persisted value
+    setCommitmentLevel(persistedLevel as CommitmentLevel);
+  } else {
+    // Set and persist default
+    const defaultLevel: CommitmentLevel = DEFAULT_COMMITMENT_LEVEL;
+    setCommitmentLevel(defaultLevel);
+    localStorage.setItem(storageKey, defaultLevel);
+  }
+}, [selectedWorkout]);
+```
+
+**Helper Function:**
+
+```typescript
+/**
+ * Validates that a string is a valid commitment level
+ * @param level - String to validate
+ * @returns true if valid commitment level, false otherwise
+ */
+function isValidCommitmentLevel(level: string): level is CommitmentLevel {
+  return Object.keys(COMMITMENT_LEVELS).includes(level);
+}
+```
+
+**Key Format:**
+
+- Pattern: `workout-{workoutId}-commitment`
+- Example: `workout-beginner-calisthenics-commitment`
+- Example: `workout-debug-commitment`
+
+**Behavior:**
+
+- Each workout maintains its own commitment level preference
+- Default commitment level ("standard") is persisted on first load if no preference exists
+- Invalid or corrupted localStorage values fall back to default and are overwritten
+- Commitment level persists across page reloads and browser sessions
 
 ### Backward Compatibility
 
@@ -375,22 +610,26 @@ Volume is managed separately from the `Workout` interface to allow flexibility i
 
 ### Volume Application Tests
 
-1. **Reps scaling**:
+1. **Reps scaling with commitment levels**:
 
-   - `reps: 10, volume: 1.0` → `10 reps`
-   - `reps: 10, volume: 1.5` → `15 reps`
-   - `reps: 10, volume: 0.5` → `5 reps`
-   - `reps: 10, volume: 0.05` → `1 rep` (minimum)
+   - `reps: 10, "Try it" (0.25)` → `3 reps` (10 \* 0.25 = 2.5 → 3)
+   - `reps: 10, "Easy win" (0.50)` → `5 reps`
+   - `reps: 10, "Comfortable" (0.75)` → `8 reps` (10 \* 0.75 = 7.5 → 8)
+   - `reps: 10, "Standard" (1.00)` → `10 reps`
+   - `reps: 10, "Push it" (1.25)` → `13 reps` (10 \* 1.25 = 12.5 → 13)
+   - `reps: 2, "Try it" (0.25)` → `1 rep` (minimum enforced)
 
-2. **Duration scaling**:
+2. **Duration scaling with commitment levels**:
 
-   - `duration: 30, volume: 1.0` → `30s`
-   - `duration: 30, volume: 1.5` → `45s`
-   - `duration: 30, volume: 0.5` → `15s`
-   - `duration: 5, volume: 0.5` → `3s` (minimum)
+   - `duration: 30, "Try it" (0.25)` → `8s` (30 \* 0.25 = 7.5 → 8)
+   - `duration: 30, "Easy win" (0.50)` → `15s`
+   - `duration: 30, "Comfortable" (0.75)` → `23s` (30 \* 0.75 = 22.5 → 23)
+   - `duration: 30, "Standard" (1.00)` → `30s`
+   - `duration: 30, "Push it" (1.25)` → `38s` (30 \* 1.25 = 37.5 → 38)
+   - `duration: 5, "Try it" (0.25)` → `3s` (minimum enforced)
 
 3. **Rest unaffected**:
-   - `rest: 60s, volume: 2.0` → `60s` (unchanged)
+   - `rest: 60s, any commitment level` → `60s` (unchanged)
 
 ### Type Safety Tests
 
@@ -403,6 +642,36 @@ Volume is managed separately from the `Workout` interface to allow flexibility i
 1. Old format correctly converts to new format
 2. Reps extracted correctly from descriptions
 3. Default values applied for missing data
+
+### Initialization Tests
+
+1. **Load persisted commitment level**:
+
+   - localStorage contains `workout-{id}-commitment: "push-it"`
+   - WorkoutDetailView loads and sets commitment level to "push-it"
+   - UI displays "Push it" as selected
+
+2. **Persist default when missing**:
+
+   - localStorage has no entry for `workout-{id}-commitment`
+   - WorkoutDetailView loads and sets commitment level to "standard"
+   - localStorage is updated with `workout-{id}-commitment: "standard"`
+
+3. **Handle invalid localStorage values**:
+
+   - localStorage contains `workout-{id}-commitment: "invalid-level"`
+   - WorkoutDetailView detects invalid value
+   - Falls back to "standard" and overwrites invalid value in localStorage
+
+4. **Workout-specific keys**:
+
+   - Different workouts use different localStorage keys
+   - `workout-beginner-calisthenics-commitment` vs `workout-debug-commitment`
+   - Each workout maintains independent commitment level
+
+5. **Key format validation**:
+   - Key format: `workout-{workoutId}-commitment`
+   - Works with various workout ID formats (kebab-case, alphanumeric, etc.)
 
 ---
 
@@ -417,9 +686,12 @@ Volume is managed separately from the `Workout` interface to allow flexibility i
 
 ## Notes
 
-- Volume is **not** stored in the `Workout` interface, allowing flexible implementation
-- Volume can be managed as global setting, per-workout, or session-only
-- All sets in a workout use the same volume multiplier (when volume is applied)
+- Commitment level (volume) is **not** stored in the `Workout` interface, allowing flexible implementation
+- Commitment level can be managed as global setting, per-workout, or session-only
+- All sets in a workout use the same commitment level/volume multiplier
 - Rest periods are intentionally excluded from volume adjustment
 - Migration is a one-time operation for existing data
-- Helper functions accept volume as a parameter, keeping workout data immutable
+- Helper functions accept volume multiplier as a parameter, keeping workout data immutable
+- Commitment ladder uses discrete levels (0.25, 0.50, 0.75, 1.00, 1.25) to avoid rounding ambiguity
+- Default commitment level is "Standard" (1.00) which maintains existing workout behavior
+- The commitment ladder emphasizes consistency and gradual progression over maximizing effort

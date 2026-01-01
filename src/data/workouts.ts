@@ -1,7 +1,6 @@
 // Set type constants
 export const SET_TYPE_TIMED = "timed" as const;
 export const SET_TYPE_REPS = "reps" as const;
-export const SET_TYPE_REST = "rest" as const;
 
 // Discriminated union types
 export interface BaseSet {
@@ -19,13 +18,7 @@ export interface RepSet extends BaseSet {
   reps: number; // Base reps value (before volume adjustment)
 }
 
-export interface Rest {
-  type: typeof SET_TYPE_REST;
-  id: string;
-  durationSeconds: number; // Not affected by volume multiplier
-}
-
-export type Set = TimedSet | RepSet | Rest;
+export type Set = TimedSet | RepSet;
 
 export interface Workout {
   id: string;
@@ -41,10 +34,6 @@ export function isRepSet(set: Set): set is RepSet {
 
 export function isTimedSet(set: Set): set is TimedSet {
   return set.type === SET_TYPE_TIMED;
-}
-
-export function isRest(set: Set): set is Rest {
-  return set.type === SET_TYPE_REST;
 }
 
 // Default workout data
@@ -140,19 +129,9 @@ export const DEFAULT_WORKOUTS: Workout[] = [
         durationSeconds: 45,
       },
       {
-        type: SET_TYPE_REST,
-        id: "2",
-        durationSeconds: 30,
-      },
-      {
         type: SET_TYPE_TIMED,
         id: "3",
         name: "High Knees",
-        durationSeconds: 30,
-      },
-      {
-        type: SET_TYPE_REST,
-        id: "4",
         durationSeconds: 30,
       },
       {
@@ -175,20 +154,10 @@ export const DEFAULT_WORKOUTS: Workout[] = [
         durationSeconds: 45,
       },
       {
-        type: SET_TYPE_REST,
-        id: "2",
-        durationSeconds: 60,
-      },
-      {
         type: SET_TYPE_TIMED,
         id: "3",
         name: "Squats",
         durationSeconds: 45,
-      },
-      {
-        type: SET_TYPE_REST,
-        id: "4",
-        durationSeconds: 60,
       },
       {
         type: SET_TYPE_TIMED,
@@ -219,11 +188,6 @@ export const DEFAULT_WORKOUTS: Workout[] = [
         type: SET_TYPE_TIMED,
         id: "1.2",
         name: "Pushups",
-        durationSeconds: 2,
-      },
-      {
-        type: SET_TYPE_REST,
-        id: "2",
         durationSeconds: 2,
       },
       {

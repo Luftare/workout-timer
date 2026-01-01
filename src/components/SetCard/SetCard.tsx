@@ -1,10 +1,6 @@
 import "./SetCard.css";
-import { Set, isRepSet, isTimedSet, isRest } from "../../data/workouts";
-import {
-  getActualReps,
-  getActualDuration,
-  getRestDuration,
-} from "../../utils/volume";
+import { Set, isRepSet, isTimedSet } from "../../data/workouts";
+import { getActualReps, getActualDuration } from "../../utils/volume";
 
 interface SetCardProps {
   set: Set;
@@ -32,12 +28,9 @@ export const SetCard = ({ set, volume }: SetCardProps) => {
   } else if (isTimedSet(set)) {
     const actualDuration = getActualDuration(set, volume);
     displayValue = formatDuration(actualDuration);
-  } else if (isRest(set)) {
-    const restDuration = getRestDuration(set);
-    displayValue = formatDuration(restDuration);
   }
 
-  const displayName = isRest(set) ? "Rest" : set.name;
+  const displayName = set.name;
 
   return (
     <div className="set-card">

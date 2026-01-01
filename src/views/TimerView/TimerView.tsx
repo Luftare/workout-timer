@@ -14,7 +14,7 @@ import {
 import { audioEngine } from "../../utils/audio";
 import { wakeLockManager } from "../../utils/wakeLock";
 import { findSetSequence } from "../../utils/setSequence";
-import { isRepSet, isTimedSet, isRest } from "../../data/workouts";
+import { isRepSet, isTimedSet } from "../../data/workouts";
 import { getActualReps, getActualDuration } from "../../utils/volume";
 import { getVolumeFromCommitment } from "../../constants/constants";
 import confetti from "canvas-confetti";
@@ -33,13 +33,10 @@ export const TimerView = () => {
     nextSet,
     reset,
     getCurrentSet,
-    getNextSet,
     isLastSet,
-    startRestAutomatically,
   } = useTimerStore();
 
   const currentSet = getCurrentSet();
-  const nextSetData = getNextSet();
 
   const countdownIntervalRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<number | null>(null);
@@ -59,8 +56,6 @@ export const TimerView = () => {
   const isIdleState = state === "idle";
   const isCompletedState = state === "completed";
   const isPausedState = state === "paused";
-  const isCurrentSetRest = currentSet !== null && isRest(currentSet);
-  const isNextSetNotRest = nextSetData !== null && !isRest(nextSetData);
   const shouldShowProgressBar = !isCountdownState && isCurrentSetTimed;
   const completedLastSet = isLastSet() && isCompletedState;
 
@@ -169,16 +164,12 @@ export const TimerView = () => {
 
           const store = useTimerStore.getState();
           const currentSetData = store.getCurrentSet();
-          const nextSetData = store.getNextSet();
           const currentIndex = store.currentSetIndex;
           const allSets = store.sets;
+          const isLastSet = store.isLastSet();
 
           const hasCurrentSet = currentSetData !== null;
-          const hasNextSet = nextSetData !== null;
-          const isCurrentSetRest =
-            currentSetData !== null && isRest(currentSetData);
-          const isNextSetRest = nextSetData !== null && isRest(nextSetData);
-          const isNextSetNotRest = nextSetData !== null && !isRest(nextSetData);
+          const hasNextSet = !isLastSet;
 
           // Check if current set is part of a multi-set sequence
           const sequence = currentSetData
@@ -188,28 +179,18 @@ export const TimerView = () => {
             sequence === null ||
             currentIndex === sequence.indices[sequence.indices.length - 1];
 
-          const shouldMoveToNextSet =
-            hasCurrentSet && isCurrentSetRest && hasNextSet && isNextSetNotRest;
-          const shouldAutoStartRest =
-            hasCurrentSet && !isCurrentSetRest && hasNextSet && isNextSetRest;
           const shouldAutoAdvanceInSequence =
             hasCurrentSet &&
-            !isCurrentSetRest &&
             sequence !== null &&
             !isLastInSequence &&
             hasNextSet;
           const shouldAutoAdvanceFromLastInSequence =
             hasCurrentSet &&
-            !isCurrentSetRest &&
             sequence !== null &&
             isLastInSequence &&
             hasNextSet;
 
-          if (shouldMoveToNextSet) {
-            store.nextSet();
-          } else if (shouldAutoStartRest) {
-            store.startRestAutomatically();
-          } else if (shouldAutoAdvanceInSequence) {
+          if (shouldAutoAdvanceInSequence) {
             // Auto-advance to next set in multi-set sequence
             store.nextSet();
           } else if (shouldAutoAdvanceFromLastInSequence) {
@@ -248,15 +229,7 @@ export const TimerView = () => {
       return;
     }
 
-    const nextSetInfo = getNextSet();
-    const hasNextSet = nextSetInfo !== null;
-    const isNextRest = nextSetInfo !== null && isRest(nextSetInfo);
-
-    if (hasNextSet && isNextRest) {
-      startRestAutomatically();
-    } else {
-      nextSet();
-    }
+    nextSet();
   };
 
   const handleNext = () => {
@@ -268,15 +241,7 @@ export const TimerView = () => {
       return;
     }
 
-    const nextSetInfo = getNextSet();
-    const hasNextSet = nextSetInfo !== null;
-    const isNextRest = nextSetInfo !== null && isRest(nextSetInfo);
-
-    if (hasNextSet && isNextRest) {
-      startRestAutomatically();
-    } else {
-      nextSet();
-    }
+    nextSet();
   };
 
   const handleBack = () => {
@@ -317,13 +282,6 @@ export const TimerView = () => {
   if (!currentSet) {
     return null;
   }
-
-  // Boolean flags for UI rendering
-  const shouldShowNextPreview =
-    isRunningState &&
-    isCurrentSetRest &&
-    nextSetData !== null &&
-    isNextSetNotRest;
 
   // Functions for button behavior
   const getButtonOnClick = () => {
@@ -379,7 +337,7 @@ export const TimerView = () => {
     : null;
 
   const volume = getVolumeFromCommitment(commitmentLevel);
-  const displayName = isRest(currentSet) ? "Rest" : currentSet.name;
+  const displayName = currentSet.name;
   let displayTitle = displayName;
 
   if (isRepSet(currentSet)) {
@@ -495,17 +453,6 @@ export const TimerView = () => {
       <div className="timer-view__main">
         <div className="timer-view__content">
           {completedLastSet ? workoutCompletedContent : workoutContent}
-
-          {/* Show next set preview during rest */}
-          {shouldShowNextPreview && (
-            <div className="timer-view__next-preview">
-              <div className="timer-view__next-preview-content">
-                <h3 className="timer-view__next-preview-title">
-                  Next: {nextSetData.name}
-                </h3>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

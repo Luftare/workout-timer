@@ -1,4 +1,4 @@
-import { RepSet, TimedSet, Rest } from "../data/workouts";
+import { RepSet, TimedSet } from "../data/workouts";
 
 const MINIMUM_REPS = 1;
 const MINIMUM_DURATION_SECONDS = 3;
@@ -24,13 +24,4 @@ export function getActualDuration(set: TimedSet, volume: number): number {
     MINIMUM_DURATION_SECONDS,
     Math.round(set.durationSeconds * volume)
   );
-}
-
-/**
- * Get duration for rest sets (not affected by volume)
- * @param set - Rest set
- * @returns Duration in seconds
- */
-export function getRestDuration(set: Rest): number {
-  return set.durationSeconds;
 }

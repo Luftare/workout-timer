@@ -1,4 +1,4 @@
-import { Set, isRest } from "../data/workouts";
+import { Set } from "../data/workouts";
 
 export interface SetSequence {
   startIndex: number;
@@ -8,7 +8,7 @@ export interface SetSequence {
 }
 
 /**
- * Finds consecutive sets with the same name (ignoring rest sets)
+ * Finds consecutive sets with the same name
  * Returns null if the current set is not part of a sequence
  */
 export function findSetSequence(
@@ -20,23 +20,13 @@ export function findSetSequence(
   }
 
   const currentSet = sets[currentIndex];
-
-  // Don't show indicator for rest sets
-  if (isRest(currentSet)) {
-    return null;
-  }
-
   const currentName = currentSet.name;
   let startIndex = currentIndex;
   let endIndex = currentIndex;
 
-  // Find the start of the sequence (go backwards, skipping rest sets)
+  // Find the start of the sequence (go backwards)
   for (let i = currentIndex - 1; i >= 0; i--) {
     const set = sets[i];
-    // Skip rest sets
-    if (isRest(set)) {
-      continue;
-    }
     // If name matches, extend sequence backwards
     if (set.name === currentName) {
       startIndex = i;
@@ -45,13 +35,9 @@ export function findSetSequence(
     }
   }
 
-  // Find the end of the sequence (go forwards, skipping rest sets)
+  // Find the end of the sequence (go forwards)
   for (let i = currentIndex + 1; i < sets.length; i++) {
     const set = sets[i];
-    // Skip rest sets
-    if (isRest(set)) {
-      continue;
-    }
     // If name matches, extend sequence forwards
     if (set.name === currentName) {
       endIndex = i;
@@ -60,12 +46,12 @@ export function findSetSequence(
     }
   }
 
-  // Collect all indices in the sequence (skipping rest sets)
+  // Collect all indices in the sequence
   const indices: number[] = [];
   for (let i = startIndex; i <= endIndex; i++) {
     const set = sets[i];
-    // Only include non-rest sets with matching name
-    if (!isRest(set) && set.name === currentName) {
+    // Only include sets with matching name
+    if (set.name === currentName) {
       indices.push(i);
     }
   }

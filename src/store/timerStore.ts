@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { COUNTDOWN_DURATION_MS } from "../constants/constants";
-import { Set, isTimedSet, isRest } from "../data/workouts";
+import { Set, isTimedSet } from "../data/workouts";
 import { Workout } from "../data/workouts";
-import { getActualDuration, getRestDuration } from "../utils/volume";
+import { getActualDuration } from "../utils/volume";
 import {
   CommitmentLevel,
   getVolumeFromCommitment,
@@ -32,7 +32,6 @@ interface TimerStore {
   getCurrentSet: () => Set | null;
   getNextSet: () => Set | null;
   isLastSet: () => boolean;
-  startRestAutomatically: () => void;
   getCurrentSetDuration: () => number; // Returns actual duration in milliseconds
 }
 
@@ -52,12 +51,8 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
     const firstSet = sets[0];
     let firstSetDurationMs = 0;
 
-    if (firstSet) {
-      if (isTimedSet(firstSet)) {
-        firstSetDurationMs = getActualDuration(firstSet, volume) * 1000;
-      } else if (isRest(firstSet)) {
-        firstSetDurationMs = getRestDuration(firstSet) * 1000;
-      }
+    if (firstSet && isTimedSet(firstSet)) {
+      firstSetDurationMs = getActualDuration(firstSet, volume) * 1000;
     }
 
     set({
@@ -108,8 +103,6 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
 
       if (isTimedSet(nextSet)) {
         nextSetDurationMs = getActualDuration(nextSet, volume) * 1000;
-      } else if (isRest(nextSet)) {
-        nextSetDurationMs = getRestDuration(nextSet) * 1000;
       }
 
       set({
@@ -126,12 +119,8 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
     const volume = getVolumeFromCommitment(commitmentLevel);
     let firstSetDurationMs = 0;
 
-    if (firstSet) {
-      if (isTimedSet(firstSet)) {
-        firstSetDurationMs = getActualDuration(firstSet, volume) * 1000;
-      } else if (isRest(firstSet)) {
-        firstSetDurationMs = getRestDuration(firstSet) * 1000;
-      }
+    if (firstSet && isTimedSet(firstSet)) {
+      firstSetDurationMs = getActualDuration(firstSet, volume) * 1000;
     }
 
     set({
@@ -154,22 +143,6 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
     const { sets, currentSetIndex } = get();
     return currentSetIndex === sets.length - 1;
   },
-  startRestAutomatically: () => {
-    const { sets, currentSetIndex } = get();
-    const nextIndex = currentSetIndex + 1;
-    if (nextIndex < sets.length) {
-      const nextSet = sets[nextIndex];
-      if (isRest(nextSet)) {
-        const restDurationMs = getRestDuration(nextSet) * 1000;
-        set({
-          currentSetIndex: nextIndex,
-          state: "running",
-          countdownRemaining: COUNTDOWN_DURATION_MS,
-          timerRemaining: restDurationMs,
-        });
-      }
-    }
-  },
   getCurrentSetDuration: () => {
     const { sets, currentSetIndex, commitmentLevel } = get();
     const currentSet = sets[currentSetIndex];
@@ -179,8 +152,6 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
 
     if (isTimedSet(currentSet)) {
       return getActualDuration(currentSet, volume) * 1000;
-    } else if (isRest(currentSet)) {
-      return getRestDuration(currentSet) * 1000;
     }
 
     return 0;

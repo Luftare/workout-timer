@@ -14,6 +14,9 @@ import {
 import { audioEngine } from "../../utils/audio";
 import { wakeLockManager } from "../../utils/wakeLock";
 import { findSetSequence } from "../../utils/setSequence";
+import { isRepSet, isTimedSet, isRest } from "../../data/workouts";
+import { getActualReps, getActualDuration, getRestDuration } from "../../utils/volume";
+import { getVolumeFromCommitment } from "../../constants/constants";
 import confetti from "canvas-confetti";
 import "./TimerView.css";
 
@@ -25,6 +28,7 @@ export const TimerView = () => {
     currentSetIndex,
     countdownRemaining,
     timerRemaining,
+    commitmentLevel,
     startCountdown,
     nextSet,
     reset,
@@ -32,6 +36,7 @@ export const TimerView = () => {
     getNextSet,
     isLastSet,
     startRestAutomatically,
+    getCurrentSetDuration,
   } = useTimerStore();
 
   const currentSet = getCurrentSet();
@@ -48,16 +53,16 @@ export const TimerView = () => {
   >(undefined);
 
   // Boolean flags
-  const isNonTimedSet = currentSet !== null && !currentSet.isTimed;
-  const isTimedSet = currentSet !== null && currentSet.isTimed;
+  const isNonTimedSet = currentSet !== null && isRepSet(currentSet);
+  const isCurrentSetTimed = currentSet !== null && isTimedSet(currentSet);
   const isCountdownState = state === "countdown";
   const isRunningState = state === "running";
   const isIdleState = state === "idle";
   const isCompletedState = state === "completed";
   const isPausedState = state === "paused";
-  const isCurrentSetRest = currentSet?.isRest === true;
-  const isNextSetNotRest = nextSetData !== null && !nextSetData.isRest;
-  const shouldShowProgressBar = !isCountdownState && isTimedSet;
+  const isCurrentSetRest = currentSet !== null && isRest(currentSet);
+  const isNextSetNotRest = nextSetData !== null && !isRest(nextSetData);
+  const shouldShowProgressBar = !isCountdownState && isCurrentSetTimed;
   const completedLastSet = isLastSet() && isCompletedState;
 
   // Format time in MM:SS format
@@ -72,7 +77,7 @@ export const TimerView = () => {
 
   // Calculate progress percentage (0-100)
   const getProgress = (): number => {
-    if (!isTimedSet) return 0;
+    if (!isCurrentSetTimed) return 0;
 
     if (isCountdownState) {
       return (
@@ -81,8 +86,9 @@ export const TimerView = () => {
       );
     }
     const isTimerActive = isRunningState || isPausedState;
-    if (isTimerActive && currentSet) {
-      const setDurationMs = currentSet.durationSeconds * 1000;
+    if (isTimerActive && currentSet && isTimedSet(currentSet)) {
+      const volume = getVolumeFromCommitment(commitmentLevel);
+      const setDurationMs = getActualDuration(currentSet, volume) * 1000;
       return ((setDurationMs - timerRemaining) / setDurationMs) * 100;
     }
     return 0;
@@ -94,7 +100,7 @@ export const TimerView = () => {
 
   // Handle countdown (only for timed sets)
   useEffect(() => {
-    const shouldRunCountdown = isCountdownState && isTimedSet;
+    const shouldRunCountdown = isCountdownState && isCurrentSetTimed;
     if (shouldRunCountdown) {
       countdownIntervalRef.current = window.setInterval(() => {
         useTimerStore
@@ -133,11 +139,11 @@ export const TimerView = () => {
         countdownIntervalRef.current = null;
       }
     };
-  }, [state, currentSet?.isTimed]);
+  }, [state, isCurrentSetTimed]);
 
   // Handle timer (only for timed sets)
   useEffect(() => {
-    const shouldRunTimer = isRunningState && isTimedSet;
+    const shouldRunTimer = isRunningState && isCurrentSetTimed;
     if (shouldRunTimer) {
       // Clear any existing interval first
       if (timerIntervalRef.current) {
@@ -170,9 +176,9 @@ export const TimerView = () => {
 
           const hasCurrentSet = currentSetData !== null;
           const hasNextSet = nextSetData !== null;
-          const isCurrentSetRest = currentSetData?.isRest === true;
-          const isNextSetRest = nextSetData?.isRest === true;
-          const isNextSetNotRest = nextSetData !== null && !nextSetData.isRest;
+          const isCurrentSetRest = currentSetData !== null && isRest(currentSetData);
+          const isNextSetRest = nextSetData !== null && isRest(nextSetData);
+          const isNextSetNotRest = nextSetData !== null && !isRest(nextSetData);
 
           // Check if current set is part of a multi-set sequence
           const sequence = currentSetData
@@ -218,7 +224,7 @@ export const TimerView = () => {
         timerIntervalRef.current = null;
       }
     };
-  }, [state, currentSetIndex, currentSet?.isTimed]);
+  }, [state, currentSetIndex, isCurrentSetTimed]);
 
   const handleStartCountdown = () => {
     startCountdown();
@@ -235,7 +241,7 @@ export const TimerView = () => {
 
     const nextSetInfo = getNextSet();
     const hasNextSet = nextSetInfo !== null;
-    const isNextRest = nextSetInfo?.isRest === true;
+    const isNextRest = nextSetInfo !== null && isRest(nextSetInfo);
 
     if (hasNextSet && isNextRest) {
       startRestAutomatically();
@@ -255,7 +261,7 @@ export const TimerView = () => {
 
     const nextSetInfo = getNextSet();
     const hasNextSet = nextSetInfo !== null;
-    const isNextRest = nextSetInfo?.isRest === true;
+    const isNextRest = nextSetInfo !== null && isRest(nextSetInfo);
 
     if (hasNextSet && isNextRest) {
       startRestAutomatically();
@@ -339,7 +345,7 @@ export const TimerView = () => {
       return true;
     }
     // Disable during running timed set
-    if (isRunningState && isTimedSet) {
+    if (isRunningState && isCurrentSetTimed) {
       return true;
     }
     // Button is enabled in all other states (idle, completed, paused, non-timed sets)
@@ -347,12 +353,14 @@ export const TimerView = () => {
   };
 
   let timingMessage = "";
-  if (isTimedSet) {
+  if (isCurrentSetTimed && currentSet) {
+    const volume = getVolumeFromCommitment(commitmentLevel);
     if (isRunningState) {
       timingMessage = formatTime(timerRemaining);
     } else {
       // Show set duration in 01:20 format
-      timingMessage = formatTime(currentSet.durationSeconds * 1000);
+      const actualDuration = getActualDuration(currentSet, volume);
+      timingMessage = formatTime(actualDuration * 1000);
     }
   }
 
@@ -361,12 +369,23 @@ export const TimerView = () => {
     ? findSetSequence(sets, currentSetIndex)
     : null;
 
+  const volume = getVolumeFromCommitment(commitmentLevel);
+  const displayName = isRest(currentSet) ? "Rest" : currentSet.name;
+  let displayTitle = displayName;
+  
+  if (isRepSet(currentSet)) {
+    const actualReps = getActualReps(currentSet, volume);
+    displayTitle = `${actualReps}x ${displayName}`;
+  } else if (isCurrentSetTimed) {
+    displayTitle = `${displayName} ${timingMessage}`;
+  }
+
   const workoutContent = (
     <>
-      <Headline>
-        {currentSet.name} {timingMessage}
-      </Headline>
-      <Paragraph>{currentSet.description}</Paragraph>
+      <Headline>{displayTitle}</Headline>
+      {!isRest(currentSet) && (
+        <Paragraph>{currentSet.description}</Paragraph>
+      )}
       {setSequence && (
         <MultiSetIndicator
           totalSets={sets.length}
@@ -478,9 +497,11 @@ export const TimerView = () => {
                 <h3 className="timer-view__next-preview-title">
                   Next: {nextSetData.name}
                 </h3>
-                <p className="timer-view__next-preview-description">
-                  {nextSetData.description}
-                </p>
+                {!isRest(nextSetData) && (
+                  <p className="timer-view__next-preview-description">
+                    {nextSetData.description}
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -499,7 +520,7 @@ export const TimerView = () => {
       </div>
 
       {/* Countdown overlay modal */}
-      {isCountdownState && isTimedSet && (
+      {isCountdownState && isCurrentSetTimed && (
         <div className="timer-view__countdown-overlay">
           <div className="timer-view__countdown-content">
             <div className="timer-view__countdown-number">

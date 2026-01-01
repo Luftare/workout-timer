@@ -1,4 +1,5 @@
-export interface Set {
+// Legacy types for migration
+export interface OldSet {
   id: string;
   name: string;
   durationSeconds: number;
@@ -7,6 +8,32 @@ export interface Set {
   isTimed: boolean;
 }
 
+// New discriminated union types
+export interface BaseSet {
+  id: string;
+  name: string;
+}
+
+export interface TimedSet extends BaseSet {
+  type: "timed";
+  durationSeconds: number; // Base duration (before volume adjustment)
+  description: string;
+}
+
+export interface RepSet extends BaseSet {
+  type: "reps";
+  reps: number; // Base reps value (before volume adjustment)
+  description: string;
+}
+
+export interface Rest {
+  type: "rest";
+  id: string;
+  durationSeconds: number; // Not affected by volume multiplier
+}
+
+export type Set = TimedSet | RepSet | Rest;
+
 export interface Workout {
   id: string;
   name: string;
@@ -14,20 +41,84 @@ export interface Workout {
   sets: Set[];
 }
 
-export const DEFAULT_WORKOUTS: Workout[] = [
+// Type guards
+export function isRepSet(set: Set): set is RepSet {
+  return set.type === "reps";
+}
+
+export function isTimedSet(set: Set): set is TimedSet {
+  return set.type === "timed";
+}
+
+export function isRest(set: Set): set is Rest {
+  return set.type === "rest";
+}
+
+// Migration functions
+/**
+ * Migrates old Set format to new discriminated union format
+ */
+function migrateSet(oldSet: OldSet): Set {
+  if (oldSet.isRest) {
+    return {
+      type: "rest",
+      id: oldSet.id,
+      durationSeconds: oldSet.durationSeconds,
+    };
+  }
+
+  if (oldSet.isTimed) {
+    return {
+      type: "timed",
+      id: oldSet.id,
+      name: oldSet.name,
+      durationSeconds: oldSet.durationSeconds,
+      description: oldSet.description,
+    };
+  }
+
+  // Rep-based set: extract reps from description
+  const repsMatch = oldSet.description.match(/(\d+)\s*reps?/i);
+  const reps = repsMatch ? parseInt(repsMatch[1], 10) : 10; // Default to 10 if not found
+
+  return {
+    type: "reps",
+    id: oldSet.id,
+    name: oldSet.name,
+    reps: reps,
+    description: oldSet.description,
+  };
+}
+
+/**
+ * Migrates old Workout format to new format
+ */
+function migrateWorkout(oldWorkout: {
+  id: string;
+  name: string;
+  description: string;
+  sets: OldSet[];
+}): Workout {
+  return {
+    id: oldWorkout.id,
+    name: oldWorkout.name,
+    description: oldWorkout.description,
+    sets: oldWorkout.sets.map(migrateSet),
+  };
+}
+
+// Legacy workout data (for migration)
+const OLD_DEFAULT_WORKOUTS: Array<{
+  id: string;
+  name: string;
+  description: string;
+  sets: OldSet[];
+}> = [
   {
     id: "debug",
     name: "Debug Workout",
     description: "Quick 2-set workout for testing (2 seconds each)",
     sets: [
-      // {
-      //   id: "1",
-      //   name: "Pushups",
-      //   durationSeconds: 2,
-      //   description: "Do pushups until the timer runs out.",
-      //   isRest: false,
-      //   isTimed: true,
-      // },
       {
         id: "1.1",
         name: "Pushups",
@@ -52,7 +143,6 @@ export const DEFAULT_WORKOUTS: Workout[] = [
         isRest: false,
         isTimed: true,
       },
-
       {
         id: "2",
         name: "Rest",
@@ -269,3 +359,7 @@ export const DEFAULT_WORKOUTS: Workout[] = [
     ],
   },
 ];
+
+// Migrate old workouts to new format
+export const DEFAULT_WORKOUTS: Workout[] =
+  OLD_DEFAULT_WORKOUTS.map(migrateWorkout);

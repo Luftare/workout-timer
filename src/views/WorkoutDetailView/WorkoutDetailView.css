@@ -13,6 +13,18 @@
   padding-top: var(--spacing-lg);
 }
 
+.workout-detail__commitment {
+  margin-bottom: var(--spacing-lg);
+}
+
+.workout-detail__commitment-label {
+  display: block;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+}
+
 .workout-detail__sets {
   flex: 1;
   margin-bottom: var(--spacing-xl);

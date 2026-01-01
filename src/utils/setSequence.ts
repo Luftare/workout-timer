@@ -1,4 +1,4 @@
-import { Set } from "../data/workouts";
+import { Set, isRest } from "../data/workouts";
 
 export interface SetSequence {
   startIndex: number;
@@ -22,7 +22,7 @@ export function findSetSequence(
   const currentSet = sets[currentIndex];
 
   // Don't show indicator for rest sets
-  if (currentSet.isRest) {
+  if (isRest(currentSet)) {
     return null;
   }
 
@@ -34,7 +34,7 @@ export function findSetSequence(
   for (let i = currentIndex - 1; i >= 0; i--) {
     const set = sets[i];
     // Skip rest sets
-    if (set.isRest) {
+    if (isRest(set)) {
       continue;
     }
     // If name matches, extend sequence backwards
@@ -49,7 +49,7 @@ export function findSetSequence(
   for (let i = currentIndex + 1; i < sets.length; i++) {
     const set = sets[i];
     // Skip rest sets
-    if (set.isRest) {
+    if (isRest(set)) {
       continue;
     }
     // If name matches, extend sequence forwards
@@ -65,7 +65,7 @@ export function findSetSequence(
   for (let i = startIndex; i <= endIndex; i++) {
     const set = sets[i];
     // Only include non-rest sets with matching name
-    if (!set.isRest && set.name === currentName) {
+    if (!isRest(set) && set.name === currentName) {
       indices.push(i);
     }
   }

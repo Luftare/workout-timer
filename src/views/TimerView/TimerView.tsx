@@ -198,6 +198,12 @@ export const TimerView = () => {
             sequence !== null &&
             !isLastInSequence &&
             hasNextSet;
+          const shouldAutoAdvanceFromLastInSequence =
+            hasCurrentSet &&
+            !isCurrentSetRest &&
+            sequence !== null &&
+            isLastInSequence &&
+            hasNextSet;
 
           if (shouldMoveToNextSet) {
             store.nextSet();
@@ -205,6 +211,9 @@ export const TimerView = () => {
             store.startRestAutomatically();
           } else if (shouldAutoAdvanceInSequence) {
             // Auto-advance to next set in multi-set sequence
+            store.nextSet();
+          } else if (shouldAutoAdvanceFromLastInSequence) {
+            // Auto-advance from last set in multi-set sequence to next set
             store.nextSet();
           } else {
             useTimerStore.setState({ state: "completed" });

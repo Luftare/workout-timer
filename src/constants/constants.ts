@@ -28,7 +28,7 @@ export const COMMITMENT_LEVELS: Record<
   "easy-win": { label: "Easy win", multiplier: 0.5, percentage: 50 },
   comfortable: { label: "Comfortable", multiplier: 0.75, percentage: 75 },
   standard: { label: "Standard", multiplier: 1.0, percentage: 100 },
-  "push-it": { label: "Push it", multiplier: 1.25, percentage: 125 },
+  "push-it": { label: "Push it", multiplier: 1.5, percentage: 150 },
 };
 
 export const DEFAULT_COMMITMENT_LEVEL: CommitmentLevel = "standard";
@@ -51,14 +51,16 @@ export function getCommitmentStorageKey(workoutId: string): string {
  * @param level - String to validate
  * @returns true if valid commitment level, false otherwise
  */
-export function isValidCommitmentLevel(level: string): level is CommitmentLevel {
+export function isValidCommitmentLevel(
+  level: string
+): level is CommitmentLevel {
   return Object.keys(COMMITMENT_LEVELS).includes(level);
 }
 
 /**
  * Convert commitment level to volume multiplier
  * @param level - Commitment level string
- * @returns Volume multiplier (0.25 to 1.25)
+ * @returns Volume multiplier (0.25 to 1.5)
  */
 export function getVolumeFromCommitment(level: CommitmentLevel): number {
   return COMMITMENT_LEVELS[level].multiplier;

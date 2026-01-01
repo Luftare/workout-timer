@@ -15,7 +15,7 @@ import { audioEngine } from "../../utils/audio";
 import { wakeLockManager } from "../../utils/wakeLock";
 import { findSetSequence } from "../../utils/setSequence";
 import { isRepSet, isTimedSet, isRest } from "../../data/workouts";
-import { getActualReps, getActualDuration, getRestDuration } from "../../utils/volume";
+import { getActualReps, getActualDuration } from "../../utils/volume";
 import { getVolumeFromCommitment } from "../../constants/constants";
 import confetti from "canvas-confetti";
 import "./TimerView.css";
@@ -36,7 +36,6 @@ export const TimerView = () => {
     getNextSet,
     isLastSet,
     startRestAutomatically,
-    getCurrentSetDuration,
   } = useTimerStore();
 
   const currentSet = getCurrentSet();
@@ -176,7 +175,8 @@ export const TimerView = () => {
 
           const hasCurrentSet = currentSetData !== null;
           const hasNextSet = nextSetData !== null;
-          const isCurrentSetRest = currentSetData !== null && isRest(currentSetData);
+          const isCurrentSetRest =
+            currentSetData !== null && isRest(currentSetData);
           const isNextSetRest = nextSetData !== null && isRest(nextSetData);
           const isNextSetNotRest = nextSetData !== null && !isRest(nextSetData);
 
@@ -372,7 +372,7 @@ export const TimerView = () => {
   const volume = getVolumeFromCommitment(commitmentLevel);
   const displayName = isRest(currentSet) ? "Rest" : currentSet.name;
   let displayTitle = displayName;
-  
+
   if (isRepSet(currentSet)) {
     const actualReps = getActualReps(currentSet, volume);
     displayTitle = `${actualReps}x ${displayName}`;
@@ -383,9 +383,6 @@ export const TimerView = () => {
   const workoutContent = (
     <>
       <Headline>{displayTitle}</Headline>
-      {!isRest(currentSet) && (
-        <Paragraph>{currentSet.description}</Paragraph>
-      )}
       {setSequence && (
         <MultiSetIndicator
           totalSets={sets.length}
@@ -497,11 +494,6 @@ export const TimerView = () => {
                 <h3 className="timer-view__next-preview-title">
                   Next: {nextSetData.name}
                 </h3>
-                {!isRest(nextSetData) && (
-                  <p className="timer-view__next-preview-description">
-                    {nextSetData.description}
-                  </p>
-                )}
               </div>
             </div>
           )}

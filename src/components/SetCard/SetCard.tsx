@@ -45,9 +45,6 @@ export const SetCard = ({ set, volume }: SetCardProps) => {
         <h3 className="set-card__name">{displayName}</h3>
         <span className="set-card__duration">{displayValue}</span>
       </div>
-      {!isRest(set) && (
-        <p className="set-card__description">{set.description}</p>
-      )}
     </div>
   );
 };

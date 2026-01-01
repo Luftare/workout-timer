@@ -87,9 +87,7 @@ export const WorkoutDetailView = () => {
       <div className="workout-detail__content">
         {/* Commitment Ladder */}
         <div className="workout-detail__commitment">
-          <label className="workout-detail__commitment-label">
-            Workout Commitment
-          </label>
+          <label className="workout-detail__commitment-label">Commitment</label>
           <CommitmentLadder
             selectedLevel={commitmentLevel}
             onLevelChange={handleCommitmentChange}
@@ -98,6 +96,7 @@ export const WorkoutDetailView = () => {
 
         {/* Sets list with volume-adjusted values */}
         <div className="workout-detail__sets">
+          <label className="workout-detail__sets-label">Sets</label>
           {selectedWorkout.sets.map((set) => (
             <SetCard key={set.id} set={set} volume={volume} />
           ))}

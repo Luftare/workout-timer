@@ -80,12 +80,6 @@
   margin: 0;
 }
 
-.timer-view__next-preview-description {
-  font-size: var(--font-size-base);
-  color: var(--color-text-light);
-  margin: 0;
-}
-
 .timer-view__countdown-overlay {
   position: fixed;
   top: 0;

@@ -2,6 +2,18 @@
 export const SET_TYPE_TIMED = "timed" as const;
 export const SET_TYPE_REPS = "reps" as const;
 
+// Set name constants
+export const SET_NAME_PUSHUPS = "Pushups";
+export const SET_NAME_HOLLOW_BODY_HOLD = "Hollow Body Hold";
+export const SET_NAME_PIKE_PUSHUPS = "Pike Pushups";
+export const SET_NAME_L_SIT = "L-Sit";
+export const SET_NAME_JUMPING_JACKS = "Jumping Jacks";
+export const SET_NAME_HIGH_KNEES = "High Knees";
+export const SET_NAME_BURPEES = "Burpees";
+export const SET_NAME_SQUATS = "Squats";
+export const SET_NAME_PLANK = "Plank";
+export const SET_NAME_PULL_UPS = "Pull-ups";
+
 // Discriminated union types
 export interface BaseSet {
   id: string;
@@ -36,6 +48,27 @@ export function isTimedSet(set: Set): set is TimedSet {
   return set.type === SET_TYPE_TIMED;
 }
 
+// Helper functions to create sets
+let idCounter = 1;
+
+function createRepSet(name: string, reps: number): RepSet {
+  return {
+    type: SET_TYPE_REPS,
+    id: String(idCounter++),
+    name,
+    reps,
+  };
+}
+
+function createTimedSet(name: string, durationSeconds: number): TimedSet {
+  return {
+    type: SET_TYPE_TIMED,
+    id: String(idCounter++),
+    name,
+    durationSeconds,
+  };
+}
+
 // Default workout data
 export const DEFAULT_WORKOUTS: Workout[] = [
   {
@@ -43,78 +76,18 @@ export const DEFAULT_WORKOUTS: Workout[] = [
     name: "Quick Calisthenics",
     description: "A quick calisthenics workout",
     sets: [
-      {
-        type: SET_TYPE_REPS,
-        id: "1",
-        name: "Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "1.2",
-        name: "Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "1.3",
-        name: "Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "2",
-        name: "Hollow Body Hold",
-        durationSeconds: 30,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "3",
-        name: "Hollow Body Hold",
-        durationSeconds: 30,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "4",
-        name: "Hollow Body Hold",
-        durationSeconds: 30,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "5",
-        name: "Pike Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "5.1",
-        name: "Pike Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "5.2",
-        name: "Pike Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "6",
-        name: "L-Sit",
-        durationSeconds: 10,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "7",
-        name: "L-Sit",
-        durationSeconds: 10,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "8",
-        name: "L-Sit",
-        durationSeconds: 10,
-      },
+      createRepSet(SET_NAME_PUSHUPS, 10),
+      createRepSet(SET_NAME_PUSHUPS, 10),
+      createRepSet(SET_NAME_PUSHUPS, 10),
+      createTimedSet(SET_NAME_HOLLOW_BODY_HOLD, 30),
+      createTimedSet(SET_NAME_HOLLOW_BODY_HOLD, 30),
+      createTimedSet(SET_NAME_HOLLOW_BODY_HOLD, 30),
+      createRepSet(SET_NAME_PIKE_PUSHUPS, 10),
+      createRepSet(SET_NAME_PIKE_PUSHUPS, 10),
+      createRepSet(SET_NAME_PIKE_PUSHUPS, 10),
+      createTimedSet(SET_NAME_L_SIT, 10),
+      createTimedSet(SET_NAME_L_SIT, 10),
+      createTimedSet(SET_NAME_L_SIT, 10),
     ],
   },
   {
@@ -122,24 +95,9 @@ export const DEFAULT_WORKOUTS: Workout[] = [
     name: "Quick Cardio",
     description: "A fast-paced cardio workout",
     sets: [
-      {
-        type: SET_TYPE_TIMED,
-        id: "1",
-        name: "Jumping Jacks",
-        durationSeconds: 45,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "3",
-        name: "High Knees",
-        durationSeconds: 30,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "5",
-        name: "Burpees",
-        reps: 10,
-      },
+      createTimedSet(SET_NAME_JUMPING_JACKS, 45),
+      createTimedSet(SET_NAME_HIGH_KNEES, 30),
+      createRepSet(SET_NAME_BURPEES, 10),
     ],
   },
   {
@@ -147,24 +105,9 @@ export const DEFAULT_WORKOUTS: Workout[] = [
     name: "Full Body Strength",
     description: "A comprehensive strength training workout",
     sets: [
-      {
-        type: SET_TYPE_TIMED,
-        id: "1",
-        name: "Pushups",
-        durationSeconds: 45,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "3",
-        name: "Squats",
-        durationSeconds: 45,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "5",
-        name: "Plank",
-        durationSeconds: 60,
-      },
+      createTimedSet(SET_NAME_PUSHUPS, 45),
+      createTimedSet(SET_NAME_SQUATS, 45),
+      createTimedSet(SET_NAME_PLANK, 60),
     ],
   },
   {
@@ -172,30 +115,10 @@ export const DEFAULT_WORKOUTS: Workout[] = [
     name: "Debug Workout",
     description: "Not a real workout, just for debugging...",
     sets: [
-      {
-        type: SET_TYPE_TIMED,
-        id: "1.1",
-        name: "Pushups",
-        durationSeconds: 2,
-      },
-      {
-        type: SET_TYPE_REPS,
-        id: "0",
-        name: "Pushups",
-        reps: 10,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "1.2",
-        name: "Pushups",
-        durationSeconds: 2,
-      },
-      {
-        type: SET_TYPE_TIMED,
-        id: "3",
-        name: "Pull-ups",
-        durationSeconds: 2,
-      },
+      createTimedSet(SET_NAME_PUSHUPS, 2),
+      createRepSet(SET_NAME_PUSHUPS, 10),
+      createTimedSet(SET_NAME_PUSHUPS, 2),
+      createTimedSet(SET_NAME_PULL_UPS, 2),
     ],
   },
 ];

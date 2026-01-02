@@ -1,0 +1,44 @@
+.set-progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.set-progress-indicator__line {
+  height: 6px;
+  border-radius: 9px;
+  flex: 1;
+}
+
+.set-progress-indicator__line--upcoming {
+  height: 6px;
+  background-color: var(--color-gray-dark);
+}
+
+.set-progress-indicator__line--completed {
+  background-color: var(--color-accent);
+}
+
+.set-progress-indicator__line--current {
+  height: 6px;
+  animation: flashCurrent 1.5s ease-in-out infinite;
+}
+
+.set-progress-indicator__line--completed-all {
+  height: 6px;
+  background-color: var(--color-accent);
+}
+
+/* Continuous flashing animation for current set */
+@keyframes flashCurrent {
+  0% {
+    background-color: var(--color-gray-dark);
+  }
+  50% {
+    background-color: var(--color-accent);
+  }
+  100% {
+    background-color: var(--color-gray-dark);
+  }
+}

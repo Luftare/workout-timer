@@ -6,6 +6,7 @@ import { Headline } from "../../components/Headline/Headline";
 import { Paragraph } from "../../components/Paragraph/Paragraph";
 import { Nav } from "../../components/Nav/Nav";
 import { MultiSetIndicator } from "../../components/MultiSetIndicator/MultiSetIndicator";
+import { SetProgressIndicator } from "../../components/SetProgressIndicator/SetProgressIndicator";
 import {
   COUNTDOWN_DURATION_MS,
   TIMER_UPDATE_INTERVAL_MS,
@@ -87,10 +88,6 @@ export const TimerView = () => {
     }
     return 0;
   };
-
-  const stepIndicator = currentSet
-    ? `${currentSetIndex + 1} of ${sets.length}`
-    : "";
 
   // Handle countdown (only for timed sets)
   useEffect(() => {
@@ -432,7 +429,18 @@ export const TimerView = () => {
 
   return (
     <div className="timer-view">
-      <Nav onExit={handleExit} centerContent={<span>{stepIndicator}</span>} />
+      <Nav
+        onExit={handleExit}
+        centerContent={
+          sets.length > 0 ? (
+            <SetProgressIndicator
+              totalSets={sets.length}
+              currentSetIndex={currentSetIndex}
+              isWorkoutCompleted={completedLastSet}
+            />
+          ) : null
+        }
+      />
       {shouldShowProgressBar && (
         <div
           className="timer-view__progress-bar"
